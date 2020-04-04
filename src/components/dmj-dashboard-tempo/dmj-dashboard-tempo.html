@@ -1,0 +1,27 @@
+<div class="pad">
+  <div class="todayColor" *ngIf="args.couleurDuJour=='Bleu'" style="background-color:#0097de">
+    <span class="main-centered">Aujourd'hui</span>
+  </div>
+  <div class="todayColor" *ngIf="args.couleurDuJour=='Rouge'" style="background-color:#f00">
+    <span class="main-centered">Aujourd'hui</span>
+  </div>
+  <div class="todayColor" *ngIf="args.couleurDuJour=='Blanc'" style="background-color:white">
+    <span class="main-centered">Aujourd'hui</span>
+  </div>
+  <div class="todayColor" *ngIf="args.couleurDuJour=='Indéterminé'" style="background-color:#e3e3e3">
+    <span class="main-centered">Aujourd'hui</span>
+  </div>
+
+  <div class="tomorrowColor" *ngIf="args.couleurDeDemain=='Bleu'" style="background-color:#0097de">
+    <span class="main-centered">Demain</span>
+  </div>
+  <div class="tomorrowColor" *ngIf="args.couleurDeDemain=='Rouge'" style="background-color:#f00">
+    <span class="main-centered">Demain</span>
+  </div>
+  <div class="tomorrowColor" *ngIf="args.couleurDeDemain=='Blanc'" style="background-color:white">
+    <span class="main-centered">Demain</span>
+  </div>
+  <div class="tomorrowColor" *ngIf="args.couleurDeDemain=='Indéterminé'" style="background-color:#e3e3e3">
+    <span class="main-centered">Demain</span>
+  </div>
+</div>

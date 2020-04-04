@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button icon-only menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{title}}{{app?.demoMode?" (DEMO)":""}}</ion-title>
+    <ion-buttons end>
+      <dmj-comm></dmj-comm>
+      <button ion-button icon-only (click)="backToHomePage()">
+        <ion-icon name="home"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="!hasHeaders">
+    <div *ngFor="let device of devices" ngSwitch="{{device.widget}}">
+      <ion-item>
+        <ion-label>{{device.name}}</ion-label>
+        <ng-container item-content>
+          <dmj-widget [device]="device" [imageSize]="imageSize" item-end *ngSwitchDefault></dmj-widget>
+          <!--for some reason ion-toggle does not support to be inside another component,
+              causing dmj-toggle to not work -->
+          <ion-toggle checked="{{device.state=='ON'}}" (ionChange)="device.stateChange(device, $event.value?'ON':'OFF')"
+            *ngSwitchCase="'toggle'"></ion-toggle>
+          <button ion-button icon-only *ngSwitchCase="'light:bulb:yellow'" item-end clear>
+            <img src="assets/imgs/smarthome/light-on.svg" height=122% />
+          </button>
+        </ng-container>
+      </ion-item>
+    </div>
+  </ion-list>
+  <ng-container *ngIf="hasHeaders">
+    <div *ngFor="let group of groups">
+      <ion-item-group>
+        <ion-item-divider color="light" *ngIf="displayHeaders"><strong text-capitalize>{{group.header}}</strong></ion-item-divider>
+        <ng-container *ngFor="let device of group.devices" ngSwitch="{{device.widget}}">
+          <ion-item>
+            <ion-label>{{device.name}}</ion-label>
+            <ng-container item-end>
+              <dmj-widget [device]="device" [imageSize]="imageSize" *ngSwitchDefault></dmj-widget>
+              <!--for some reason ion-toggle does not support to be inside another component,
+              causing dmj-toggle to not work -->
+              <ion-toggle checked="{{device.state=='ON'}}" (ionChange)="device.stateChange(device, $event.value?'ON':'OFF')"
+                *ngSwitchCase="'toggle'"></ion-toggle>
+              <button ion-button icon-only *ngSwitchCase="'light:bulb:yellow'" clear>
+                <img src="assets/imgs/smarthome/light-on.svg" height=122% />
+              </button>
+            </ng-container>
+          </ion-item>
+        </ng-container>
+        </ion-item-group>
+    </div>
+  </ng-container>
+</ion-content>

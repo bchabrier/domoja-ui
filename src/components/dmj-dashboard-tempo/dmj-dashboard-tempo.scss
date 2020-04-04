@@ -1,0 +1,27 @@
+dmj-dashboard-tempo {
+	div.pad {
+		padding-top: 7px;
+		padding-bottom: 7px; 
+	}
+	
+	span.main-centered {
+		line-height: 100%;
+		margin: auto;
+	}
+
+	div.todayColor {
+		border-width: 4px 4px 2px 4px;
+		border-color: lightgrey;
+		border-style: solid;
+		height: 43px;
+		display: flex;
+	}
+
+	div.tomorrowColor {
+		border-width: 2px 4px 4px 4px;
+		border-color: lightgrey;
+		border-style: solid;
+		height: 43px;
+		display: flex;
+	}
+}

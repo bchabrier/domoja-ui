@@ -1,0 +1,89 @@
+#!/bin/sh
+
+cd `dirname $0`/..
+
+tmpfile=/tmp/update_project_file.$$
+
+START ()
+{
+    _balise=$1
+    _file=$2
+    cp $_file $tmpfile.FULL
+    >$tmpfile
+    awk '{ print } /\/\/: # \('$_balise' START\)/ { exit }' $tmpfile.FULL > $tmpfile.$_balise.START
+}
+
+END ()
+{
+    awk '/\/\/: # \('$_balise' END\)/ { p = 1 } p == 1 { print } ' $tmpfile.FULL > $tmpfile.$_balise.END
+    cat $tmpfile.$_balise.START $tmpfile $tmpfile.$_balise.END > $tmpfile.FULL
+
+    if cmp -s $tmpfile.FULL $_file
+    then
+	rm -f $tmpfile.FULL
+    else
+	echo -----------------------------------------------------------
+	echo Replacing balise \'$_balise\' with:
+	cat $tmpfile
+	
+	mv $_file /tmp/`basename $_file`.$$
+	mv $tmpfile.FULL $_file
+    fi
+}
+
+# replacement sections
+
+pagesfiles=$(ls src/pages/*/*.ts | grep -v .module.)
+
+START ImportPageComponents src/app/app.module.ts
+awk '/export class/ {
+    file=FILENAME
+    gsub(/^src/, "..", file);
+    gsub(/.ts$/, "", file);
+    print "import { "$3" } from '"'"'"file"'"'"';"}' $pagesfiles > $tmpfile
+END
+
+START PageDeclarations src/app/app.module.ts
+awk '/export class/ {print $3","}' $pagesfiles > $tmpfile
+END
+
+START PageComponents src/app/app.module.ts
+awk '/export class/ {print $3","}' $pagesfiles > $tmpfile
+END
+
+widgetfiles=$(ls src/components/*/dmj-*.ts | grep -v .module.)
+
+START ImportWidgetComponents src/app/app.module.ts
+awk '/export class/ {
+    file=FILENAME
+    gsub(/^src/, "..", file);
+    gsub(/.ts$/, "", file);
+    print "import { "$3" } from '"'"'"file"'"'"';"}' $widgetfiles > $tmpfile
+END
+
+START WidgetComponents src/app/app.module.ts
+awk '/export class/ {print $3","}' $widgetfiles > $tmpfile
+END
+
+START SelectorWidgetComponents src/components/components.module.ts
+awk '/export class/ { 
+    name=$3;
+    gsub(/Component$/, "", name);
+    selector=tolower(substr(name, 1, 1));
+    for (i = 2; i <= length(name); i++) {
+        c = substr($3, i, 1);
+        if (c >= "A" && c <= "Z") {
+            selector=selector"-";
+        }
+        selector=selector""tolower(c);
+    }
+    print "\""selector"\": "$3","}' $widgetfiles > $tmpfile
+END
+
+# update the login.html files with the newest one
+loginFiles="src/login.html www/login.html"
+newest=`ls -t $loginFiles | head -1`
+for f in $loginFiles
+do
+    cmp -s $newest $f || cp $newest $f
+done

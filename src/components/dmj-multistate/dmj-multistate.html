@@ -1,0 +1,2 @@
+<button ion-button *ngFor="let c of states; let i = index" color="{{colors[i]}}" small [outline]="device.state!=states[i]"
+    (click)="changeState(device, states[i])">{{states[i]}}</button>

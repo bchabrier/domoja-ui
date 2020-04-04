@@ -1,0 +1,3 @@
+<!-- width must be absolute or image shifts to the left -->
+<img *ngIf="imageSize=='tiny'" (load)="onload()" (error)="onerror()" height=45px src={{url}}/>
+<img *ngIf="imageSize!='tiny'" (load)="onload()" (error)="onerror()" src={{url}}/>

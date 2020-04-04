@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button icon-only menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{title}}{{app?.demoMode?" (DEMO)":""}}</ion-title>
+    <ion-buttons end>
+      <dmj-comm></dmj-comm>
+      <button ion-button icon-only (click)="backToHomePage()">
+        <ion-icon name="home"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <div class="grid">
+    <ng-container *ngFor="let widget of widgets">
+      <div [class]="'main-icon' + (widget.linkPage?' pointer':'')" (click)="openPage(widget.linkPage)">
+        <dmj-dashboard-component [widget]="widget"></dmj-dashboard-component>
+        <div>
+          {{interpretLabel(widget.label)}}
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ion-content>

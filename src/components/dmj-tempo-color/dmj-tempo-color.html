@@ -1,0 +1,6 @@
+<ng-container ngSwitch="{{device.state}}">
+  <span *ngSwitchCase="'Bleu'" style="background-color:#0097de">{{device.state}}</span>
+  <span *ngSwitchCase="'Rouge'" style="background-color:#f00">{{device.state}}</span>
+  <span *ngSwitchCase="'Blanc'" style="background-color:white">{{device.state}}</span>
+  <span *ngSwitchCase="'Indéterminé'" style="background-color:#e3e3e3">{{device.state}}</span>
+</ng-container>

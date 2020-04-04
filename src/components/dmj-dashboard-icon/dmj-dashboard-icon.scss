@@ -1,0 +1,18 @@
+dmj-dashboard-icon {
+    div.frame {
+        height: 100px;
+        position: relative;
+    }
+    ion-icon.largeIcon {
+        font-size: 100px;
+        text-align: center;
+    }
+    div.verticallyCenteredOverlay {
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        margin: unset;
+        top: 50%;
+        transform: translateY(-50%);
+        //font-weight: 1000;
+    }}

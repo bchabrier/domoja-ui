@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button icon-only menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{title}}{{app?.demoMode?" (DEMO)":""}}</ion-title>
+    <ion-buttons end>
+      <dmj-comm></dmj-comm>
+      <button ion-button icon-only (click)="backToHomePage()">
+        <ion-icon name="home"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <h1>Domoja</h1>
+  <img src="/assets/favicon/domoja.svg" width=30%>
+  <p>
+    Domoja is a home automation framework written in TypeScript,
+    Angular and Ionic. It supports easy addition of new
+    components, pages, and sources of information.
+  </p>
+  <p>
+    Written by Bruno Chabrier
+  </p>
+  <p>
+    Github: <a href="https://github.com/bchabrier/domoja">https://github.com/bchabrier/domoja</a> <br />
+    NPM: <a href="https://www.npmjs.com/package/domoja">https://www.npmjs.com/package/domoja</a> <br />
+  </p>
+  <p>
+    <ion-item no-lines>
+      <ion-label text-right>Demo mode:</ion-label>
+      <ion-toggle checked="{{app.demoMode}}" (ionChange)="setDemoMode($event.value)" item-content></ion-toggle>
+    </ion-item>
+  </p>
+  <h3>Statistics</h3>
+  <table>
+    <tr>
+      <td text-right>Domoja server start:&nbsp;</td>
+      <td>{{app.startTime | friendlyDate}}</td>
+    </tr>
+    <tr>
+      <td text-right>Users connected:&nbsp;</td>
+      <td>{{app.nbWebsockets}}</td>
+    </tr>
+    <tr>
+      <td text-right>HTTP:&nbsp;</td>
+      <td>{{app.nbWebsocketsHTTP}}</td>
+    </tr>
+    <tr>
+      <td text-right>HTTPS:&nbsp;</td>
+      <td>{{app.nbWebsocketsHTTPS}}</td>
+    </tr>
+    <tr>
+      <td text-right>Devices:&nbsp;</td>
+      <td>{{app.nbDevices}}</td>
+    </tr>
+    <tr>
+      <td text-right>Sources:&nbsp;</td>
+      <td>{{app.nbSources}}</td>
+    </tr>
+    <tr>
+      <td text-right>Scenarios:&nbsp;</td>
+      <td>{{app.nbScenarios}}</td>
+    </tr>
+    <tr>
+      <td text-right>Pages:&nbsp;</td>
+      <td>{{app.nbPages}}</td>
+    </tr>
+  </table>
+
+</ion-content>

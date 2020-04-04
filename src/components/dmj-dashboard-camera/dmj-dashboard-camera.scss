@@ -1,0 +1,21 @@
+dmj-dashboard-camera {
+    div.imgFrame {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100px;
+        position: relative;
+    }
+    img.largeIcon {
+        width: auto;
+        height: auto;
+        color: lightgrey;
+        position: absolute;
+        max-height: 90px;
+    }
+    ion-icon.largeIcon {
+        font-size: 100px;
+        color: lightgrey;
+        text-align: center;
+    }
+}
