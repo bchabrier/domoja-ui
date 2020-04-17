@@ -12,7 +12,7 @@
     "ionic:serve:before": "bin/update_project",
     "ionic:build:before": "bin/update_project",
     "ionic:build": "ionic-app-scripts build --prod --wwwDir ~/domoja/www",
-    "ionic:build:after": "sed -e 's!<title>Domoja.*</title>!<title>Domoja</title>!' < src/login.html > ~/domoja/www/login.html; cd ~/domoja/www/assets/favicon && rm -f *.zip readme.txt"
+    "ionic:build:after": "sed -e 's!<title>Domoja.*</title>!<title>Domoja</title>!' < src/login.html > ~/domoja/www/login.html; cp src/manifest-auth.json ~/domoja/www; cd ~/domoja/www/assets/favicon && rm -f *.zip readme.txt"
   },
   "dependencies": {
     "@angular/animations": "5.2.11",
