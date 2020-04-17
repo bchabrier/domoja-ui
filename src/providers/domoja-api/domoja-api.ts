@@ -53,7 +53,7 @@ function isDate(value: string | Date) {
 @Injectable()
 export class DomojaApiService {
 
-  DomojaURL = 'http://192.168.0.10:4001';
+  DomojaURL = 'http://192.168.0.10:4001'; // set to window.location.origin if the UI use the same URL as Domoja
 
   private devices: Array<Device>;
   private devicesByPath: Array<Device> = [];
