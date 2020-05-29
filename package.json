@@ -4,6 +4,7 @@
   "author": "Bruno Chabrier",
   "homepage": "https://github.com/bchabrier/domoja",
   "private": true,
+  "license": "GPL-3.0",
   "scripts": {
     "start": "ionic serve --address 192.168.0.10 --no-open",
     "clean": "ionic-app-scripts clean",
