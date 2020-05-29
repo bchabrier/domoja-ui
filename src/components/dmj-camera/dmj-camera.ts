@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DmjWidgetComponent } from '../dmj-widget';
+import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
 
 /**
  * Generated class for the DmjCameraComponent component.
@@ -23,7 +24,7 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
   ngOnInit() {
     this.mode = this.args[0] == 'snapshot' ? 'snapshot' : 'stream';
     this.refreshInterval = this.args[1];
-    this.url = this.device.id;
+    this.url = `${DomojaApiService.DomojaURL}/devices/${this.device.path}/${this.mode}`; // need to handle non snapshot as well
     this.url += this.url.indexOf('?') >= 0 ? '&' : '?';
     this.url += 't=';
   }
