@@ -35,7 +35,7 @@ export class MyApp {
       } else {
         //alert('redirecting to /login')
         // pass domojaserver and return page through cookies to avoid making them visible
-        document.cookie = 'DomojaURL=' + api.DomojaURL;
+        document.cookie = 'DomojaURL=' + DomojaApiService.DomojaURL;
         document.cookie = 'returnPage=';
         window.location.href = '/login.html';
         //this.nav.setRoot(LoginPage);

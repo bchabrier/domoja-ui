@@ -53,7 +53,7 @@ function isDate(value: string | Date) {
 @Injectable()
 export class DomojaApiService {
 
-  DomojaURL = 'http://192.168.0.10:4001'; // set to window.location.origin if the UI use the same URL as Domoja
+  public static DomojaURL = 'https://domo.bchabrier.com'; // set to window.location.origin if the UI use the same URL as Domoja
 
   private devices: Array<Device>;
   private devicesByPath: Array<Device> = [];
@@ -74,7 +74,7 @@ export class DomojaApiService {
 
     // create the websocket observable
     this.events = <Subject<message>>wsService
-      .connect(this.DomojaURL);
+      .connect(DomojaApiService.DomojaURL);
 
     // register to get the websocket updates
     this.events.subscribe((event: message) => {
@@ -109,7 +109,7 @@ export class DomojaApiService {
   private loadFromAPI<thing>(path: string, observer: Subject<thing>, transform?: (ret: thing) => thing) {
     this.nbComms++
     this.nbCommsSubject.next(this.nbComms);
-    this.http.get(`${this.DomojaURL}${path}`, { withCredentials: true }).subscribe(res => {
+    this.http.get(`${DomojaApiService.DomojaURL}${path}`, { withCredentials: true }).subscribe(res => {
       if (this.authentified != true) {
         this.authentified = true;
         this.authentifiedObservable.next(true);
@@ -131,7 +131,7 @@ export class DomojaApiService {
               this.authentifiedObservable.next(false);
             }
           }
-          console.error(err.message);
+          console.error('Error with GET', `${DomojaApiService.DomojaURL}${path}` + ':', err.message);
           //observer.error(err);
           //observer.hasError = false;
           //observer.isStopped = false;
@@ -151,7 +151,7 @@ export class DomojaApiService {
     for (let i = 0; i < commands.length; i++) {
       body += `${commands[i]}=${values[i]}&`;
     }
-    return this.http.post(`${this.DomojaURL}${path}`, body,
+    return this.http.post(`${DomojaApiService.DomojaURL}${path}`, body,
       {
         withCredentials: true,
         headers: {
@@ -227,7 +227,7 @@ export class DomojaApiService {
   getDevicesFromAPI(): Observable<Array<Device>> {
     this.nbComms++
     this.nbCommsSubject.next(this.nbComms);
-    return this.http.get(`${this.DomojaURL}/devices`, { withCredentials: true }).catch((err, caught) => {
+    return this.http.get(`${DomojaApiService.DomojaURL}/devices`, { withCredentials: true }).catch((err, caught) => {
       return of([]);
     }).map(res => {
       console.log('done real API call');
