@@ -14,7 +14,7 @@ import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
 })
 export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
   mode: 'snapshot' | 'stream';
-  refreshInterval: string;
+  refreshInterval: number | '';
   @Input() url: string;
 
   constructor() {
@@ -22,23 +22,44 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.mode = this.args[0] == 'snapshot' ? 'snapshot' : 'stream';
-    this.refreshInterval = this.args[1];
-    this.url = `${DomojaApiService.DomojaURL}/devices/${this.device.path}/${this.mode}`; // need to handle non snapshot as well
-    this.url += this.url.indexOf('?') >= 0 ? '&' : '?';
-    this.url += 't=';
+    // args: [type:'snapshot' | 'stream', refreshInterval:number]
+    if (this.args[0] == 'snapshot') {
+      this.mode = 'snapshot';
+      this.refreshInterval = (this.imageSize == 'tiny') ? 10000 : 0;
+      let maxRefreshInterval = this.args && Number(this.args[1]);
+      if (!isNaN(maxRefreshInterval)) {
+        this.refreshInterval = Math.max(maxRefreshInterval, this.refreshInterval);
+      }
+      this.url = `${DomojaApiService.DomojaURL}/devices/${this.device.path}/${this.mode}`;
+      this.url += this.url.indexOf('?') >= 0 ? '&' : '?';
+      this.url += 't=';
+    } else {
+      if (this.imageSize == 'tiny') {
+        this.mode = 'snapshot';
+        this.refreshInterval = 10000;  
+      } else {
+        this.mode = 'stream';
+      }
+    }
+    this.url = `${DomojaApiService.DomojaURL}/devices/${this.device.path}/${this.mode}`;
+    if (this.mode == 'snapshot') {
+      this.url += this.url.indexOf('?') >= 0 ? '&' : '?';
+      this.url += 't=';
+    }
   }
 
   updateUrl() {
-    var t = Date.now();
-    this.url = this.url.substring(0, this.url.lastIndexOf("t=") + 2) + t;
+    if (this.mode == 'snapshot') {
+      var t = Date.now();
+      this.url = this.url.substring(0, this.url.lastIndexOf("t=") + 2) + t;
+    }
   }
 
   onload() {
-    if (this.refreshInterval != '' && this.refreshInterval != undefined) {
+    if (this.mode == 'snapshot' && this.refreshInterval !== '' && this.refreshInterval !== undefined) {
       setTimeout(() => {
         this.updateUrl();
-      }, parseInt(this.refreshInterval));
+      }, this.refreshInterval);
     }
   }
 

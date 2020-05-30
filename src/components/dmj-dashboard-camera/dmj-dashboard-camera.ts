@@ -7,7 +7,7 @@ import { DomojaApiService, Device } from '../../providers/domoja-api/domoja-api'
   templateUrl: 'dmj-dashboard-camera.html'
 })
 export class DmjDashboardCameraComponent extends DmjDashboardComponent implements OnInit {
-  refreshInterval: string = '10000';
+  refreshInterval: number = 10000;
   camera: Device;
 
   constructor() {
@@ -18,7 +18,7 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
     if (this.args.camera) {
       this.args.url = `${DomojaApiService.DomojaURL}/devices/${this.args.camera}/snapshot`;
     }
-    if (!this.args.url || this.args.url == "") {
+    if (this.args.url && this.args.url != "") {
       this.args.url += this.args.url.indexOf('?') >= 0 ? '&' : '?';
       this.args.url += 't=';
     }
@@ -32,11 +32,9 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
 
   onload() {
     if (!this.args.url) return;
-    if (this.refreshInterval != '' && this.refreshInterval != undefined) {
-      setTimeout(() => {
-        this.updateUrl();
-      }, parseInt(this.refreshInterval));
-    }
+    setTimeout(() => {
+      this.updateUrl();
+    }, this.refreshInterval);
   }
 
   onerror() {
