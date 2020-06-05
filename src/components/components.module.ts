@@ -1,39 +1,47 @@
 import { NgModule } from '@angular/core';
-import { DmjCommComponent } from './dmj-comm/dmj-comm';
 import { IonicModule } from 'ionic-angular';
-import { DmjWalkingmanComponent } from './dmj-walkingman/dmj-walkingman';
-import { DmjWidgetComponent } from './dmj-widget';
-import { DmjDashboardComponent } from './dmj-dashboard-component';
 import { DirectivesModule } from '../directives/directives.module';
 import { PipesModule } from '../pipes/pipes.module';
-import { DmjUnknownComponent } from './dmj-unknown/dmj-unknown';
-import { DmjTextComponent } from './dmj-text/dmj-text';
-import { DmjToggleComponent } from './dmj-toggle/dmj-toggle';
-import { DmjTempoColorComponent } from './dmj-tempo-color/dmj-tempo-color';
-import { DmjMultistateComponent } from './dmj-multistate/dmj-multistate';
-import { DmjCameraComponent } from './dmj-camera/dmj-camera';
-import { DmjConfirmComponent } from './dmj-confirm/dmj-confirm';
-import { DmjDashboardIconComponent } from './dmj-dashboard-icon/dmj-dashboard-icon';
-import { DmjDashboardTempoComponent } from './dmj-dashboard-tempo/dmj-dashboard-tempo';
-import { DmjDashboardCameraComponent } from './dmj-dashboard-camera/dmj-dashboard-camera';
-import { DmjColorComponent } from './dmj-color/dmj-color';
+import { DmjWidgetComponent } from '../components/dmj-widget';
+import { DmjDashboardComponent } from '../components/dmj-dashboard-component';
+//: # (ImportWidgetComponents START)  
+import { DmjCameraComponent } from '../components/dmj-camera/dmj-camera';
+import { DmjColorComponent } from '../components/dmj-color/dmj-color';
+import { DmjCommComponent } from '../components/dmj-comm/dmj-comm';
+import { DmjConfirmComponent } from '../components/dmj-confirm/dmj-confirm';
+import { DmjDashboardCameraComponent } from '../components/dmj-dashboard-camera/dmj-dashboard-camera';
+import { DmjDashboardIconComponent } from '../components/dmj-dashboard-icon/dmj-dashboard-icon';
+import { DmjDashboardTempoComponent } from '../components/dmj-dashboard-tempo/dmj-dashboard-tempo';
+import { DmjGraph } from '../components/dmj-graph/dmj-graph';
+import { DmjMultistateComponent } from '../components/dmj-multistate/dmj-multistate';
+import { DmjTempoColorComponent } from '../components/dmj-tempo-color/dmj-tempo-color';
+import { DmjTextComponent } from '../components/dmj-text/dmj-text';
+import { DmjToggleComponent } from '../components/dmj-toggle/dmj-toggle';
+import { DmjUnknownComponent } from '../components/dmj-unknown/dmj-unknown';
+import { DmjWalkingmanComponent } from '../components/dmj-walkingman/dmj-walkingman';
+//: # (ImportWidgetComponents END)  
 
 @NgModule({
-    declarations: [DmjCommComponent,
-        DmjWalkingmanComponent,
+    declarations: [    
         DmjWidgetComponent,
         DmjDashboardComponent,
-        DmjUnknownComponent,
-        DmjTextComponent,
-        DmjToggleComponent,
-        DmjTempoColorComponent,
-        DmjMultistateComponent,
-        DmjCameraComponent,
-        DmjConfirmComponent,
-        DmjDashboardIconComponent,
-        DmjDashboardTempoComponent,
-        DmjDashboardCameraComponent,
-    DmjColorComponent],
+        //: # (WidgetComponents START)    
+DmjCameraComponent,
+DmjColorComponent,
+DmjCommComponent,
+DmjConfirmComponent,
+DmjDashboardCameraComponent,
+DmjDashboardIconComponent,
+DmjDashboardTempoComponent,
+DmjGraph,
+DmjMultistateComponent,
+DmjTempoColorComponent,
+DmjTextComponent,
+DmjToggleComponent,
+DmjUnknownComponent,
+DmjWalkingmanComponent,
+        //: # (WidgetComponents END)    
+],
     imports: [
         IonicModule,
         DirectivesModule,
@@ -67,6 +75,7 @@ export class ComponentsModule {
 "dmj-dashboard-camera": DmjDashboardCameraComponent,
 "dmj-dashboard-icon": DmjDashboardIconComponent,
 "dmj-dashboard-tempo": DmjDashboardTempoComponent,
+"dmj-graph": DmjGraph,
 "dmj-multistate": DmjMultistateComponent,
 "dmj-tempo-color": DmjTempoColorComponent,
 "dmj-text": DmjTextComponent,

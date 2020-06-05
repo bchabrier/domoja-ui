@@ -31,6 +31,7 @@ import { DmjConfirmComponent } from '../components/dmj-confirm/dmj-confirm';
 import { DmjDashboardCameraComponent } from '../components/dmj-dashboard-camera/dmj-dashboard-camera';
 import { DmjDashboardIconComponent } from '../components/dmj-dashboard-icon/dmj-dashboard-icon';
 import { DmjDashboardTempoComponent } from '../components/dmj-dashboard-tempo/dmj-dashboard-tempo';
+import { DmjGraph } from '../components/dmj-graph/dmj-graph';
 import { DmjMultistateComponent } from '../components/dmj-multistate/dmj-multistate';
 import { DmjTempoColorComponent } from '../components/dmj-tempo-color/dmj-tempo-color';
 import { DmjTextComponent } from '../components/dmj-text/dmj-text';
@@ -78,6 +79,7 @@ DmjConfirmComponent,
 DmjDashboardCameraComponent,
 DmjDashboardIconComponent,
 DmjDashboardTempoComponent,
+DmjGraph,
 DmjMultistateComponent,
 DmjTempoColorComponent,
 DmjTextComponent,
