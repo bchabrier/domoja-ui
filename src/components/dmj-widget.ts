@@ -1,4 +1,4 @@
-import { Component, Input, ComponentFactoryResolver, ViewChild, OnInit } from '@angular/core';
+import { Component, Input, ComponentFactoryResolver, ViewChild, OnInit, OnDestroy } from '@angular/core';
 
 import { DmjWidgetHostDirective } from '../directives/dmj-widget-host';
 import { Device } from '../providers/domoja-api/domoja-api'
@@ -16,7 +16,7 @@ import { ComponentsModule } from './components.module';
   selector: 'dmj-widget',
   template: `<ng-template dmj-widget-host></ng-template>`
 })
-export class DmjWidgetComponent implements OnInit {
+export class DmjWidgetComponent implements OnInit, OnDestroy {
 
   @Input() device: Device;
   @Input() imageSize: string;
@@ -45,5 +45,9 @@ export class DmjWidgetComponent implements OnInit {
     (<DmjWidgetComponent>componentRef.instance).device = this.device;
     (<DmjWidgetComponent>componentRef.instance).imageSize = this.imageSize;
     (<DmjWidgetComponent>componentRef.instance).args = args;
+  }
+
+  ngOnDestroy() {
+
   }
 }

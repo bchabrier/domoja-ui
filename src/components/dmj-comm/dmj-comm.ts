@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
+import { Subscription } from 'rxjs';
 
 /**
  * Generated class for the DmjCommComponent component.
@@ -11,13 +12,16 @@ import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
   selector: 'dmj-comm',
   templateUrl: 'dmj-comm.html'
 })
-export class DmjCommComponent {
+export class DmjCommComponent implements OnInit, OnDestroy {
 
   nbComms: number = 0;
+  comms_subscription: Subscription;
 
   constructor(private api: DomojaApiService) {
+  }
 
-    this.api.nbCommsSubject.subscribe(data => {
+  ngOnInit() {
+    this.comms_subscription = this.api.nbCommsSubject.subscribe(data => {
       if (data < this.nbComms) {
         setTimeout(() => {
           this.nbComms = data;
@@ -26,5 +30,9 @@ export class DmjCommComponent {
         this.nbComms = data;
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.comms_subscription.unsubscribe()
   }
 }

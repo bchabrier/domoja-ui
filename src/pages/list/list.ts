@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { NavController, NavParams } from 'ionic-angular';
 import { DomojaApiService, Device, App } from '../../providers/domoja-api/domoja-api'
 import { PageListProvider } from '../../providers/page-list/page-list';
@@ -8,7 +9,7 @@ import { DmjPage } from '../dmj-page';
     selector: 'page-list',
     templateUrl: 'list.html'
 })
-export class ListPage extends DmjPage {
+export class ListPage extends DmjPage implements OnInit, OnDestroy {
     icons: Array<string>;
     devicesFromApi: Array<Device> = [];
     args: { [key: string]: string };
@@ -20,11 +21,17 @@ export class ListPage extends DmjPage {
     imageSize: string; // size of the camera fields 
     private signature: string = '';
     app: App;
+    pages_subscription: Subscription;
+    devices_subscription: Subscription;
+    app_subscription: Subscription;
 
     constructor(public navCtrl: NavController, public navParams: NavParams, public api: DomojaApiService, public pageList: PageListProvider) {
         super(navCtrl, navParams, api, pageList);
+    }
 
-        this.api.getPages().map(pages => {
+    ngOnInit() {
+        super.ngOnInit();
+        this.pages_subscription = this.api.getPages().map(pages => {
             return pages.filter(page => {
                 return page.name == this.pageName;
             });
@@ -37,23 +44,30 @@ export class ListPage extends DmjPage {
             }
         });
 
-        this.api.getDevices().subscribe(devices => {
+        this.devices_subscription = this.api.getDevices().subscribe(devices => {
             // if devices really changed, force update groups
             if (this.devicesFromApi !== devices) this.signature = '';
             this.devicesFromApi = devices;
             this.updateGroups();
         });
 
-        this.api.getApp().subscribe(app => {
+        this.app_subscription = this.api.getApp().subscribe(app => {
             this.app = app;
         });
+    }
+
+    ngOnDestroy() {
+        this.app_subscription.unsubscribe();
+        this.devices_subscription.unsubscribe();
+        this.pages_subscription.unsubscribe();
+        super.ngOnDestroy();
     }
 
     updateGroups() {
         this.hasHeaders = this.args && this.args['tag-list'] ? true : false;
         if (this.hasHeaders) {
             this.tagList = this.args['tag-list'].split(/, */);
-            this.displayHeaders = this.args['headers'] == 'false'? false: true;
+            this.displayHeaders = this.args['headers'] == 'false' ? false : true;
         }
 
         if (this.hasHeaders) {
@@ -85,7 +99,7 @@ export class ListPage extends DmjPage {
                     if (pattern.length == 0 || pattern.charAt(pattern.length - 1) != '*') {
                         searchTag = searchTag + ',';
                     } else {
-                        searchTag = searchTag.substr(0, searchTag.length-1);
+                        searchTag = searchTag.substr(0, searchTag.length - 1);
                     }
 
                     d = this.devicesFromApi.filter(d => {
@@ -97,7 +111,7 @@ export class ListPage extends DmjPage {
                     });
                 }
                 groups.push({
-                    header:t,
+                    header: t,
                     devices: d
                 });
                 newSignature = [newSignature, t + ':' + d.map(d => d.path).join('| ')].join(', ');

@@ -1,5 +1,6 @@
-import { Component, Input, ComponentFactoryResolver, ViewChild, OnInit } from '@angular/core';
+import { Component, Input, ComponentFactoryResolver, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { DomojaApiService, Device } from '../providers/domoja-api/domoja-api'
+import { Subscription } from 'rxjs';
 
 import { DmjWidgetHostDirective } from '../directives/dmj-widget-host';
 
@@ -13,7 +14,7 @@ import 'rxjs/add/operator/map';
   selector: 'dmj-dashboard-component',
   template: `<ng-template dmj-widget-host></ng-template>`
 })
-export class DmjDashboardComponent implements OnInit {
+export class DmjDashboardComponent implements OnInit, OnDestroy {
 
   devices: Map<string, Device> = new Map<string, Device>();
   @Input() widget: {
@@ -24,6 +25,7 @@ export class DmjDashboardComponent implements OnInit {
   instance: DmjDashboardComponent;
   static api: DomojaApiService;
   somethingChanged: BehaviorSubject<number>;
+  devices_subscription: Subscription;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver = null, private api: DomojaApiService = null) {
     this.somethingChanged = new BehaviorSubject<number>(0);
@@ -50,7 +52,7 @@ export class DmjDashboardComponent implements OnInit {
     } else {
       // creation as super of a dashboard component
 
-      DmjDashboardComponent.api.getDevices().subscribe(devices => {
+      this.devices_subscription = DmjDashboardComponent.api.getDevices().subscribe(devices => {
         this.devices.clear();
         devices && devices.forEach(d => {
           this.devices.set(d.path, d);
@@ -59,6 +61,10 @@ export class DmjDashboardComponent implements OnInit {
         this.somethingChanged.next(this.somethingChanged.getValue() + 1);
       });
     }
+  }
+
+  ngOnDestroy() {
+    this.devices_subscription && this.devices_subscription.unsubscribe();
   }
 
   fillArgs(devices: Map<string, Device>) {
