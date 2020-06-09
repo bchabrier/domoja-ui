@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DmjWidgetComponent } from '../dmj-widget';
+import { CameraUrlProvider } from '../../providers/camera-url/camera-url'
 import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
 
 /**
@@ -16,8 +17,9 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
   mode: 'snapshot' | 'stream';
   refreshInterval: number | '';
   @Input() url: string;
+  cameraUrl: string;
 
-  constructor() {
+  constructor(private cameraUrlProvider: CameraUrlProvider) {
     super(null);
   }
 
@@ -30,33 +32,31 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
       if (!isNaN(maxRefreshInterval)) {
         this.refreshInterval = Math.max(maxRefreshInterval, this.refreshInterval);
       }
-      this.url = `${DomojaApiService.DomojaURL}/devices/${this.device.path}/${this.mode}`;
-      this.url += this.url.indexOf('?') >= 0 ? '&' : '?';
-      this.url += 't=';
     } else {
       if (this.imageSize == 'tiny') {
         this.mode = 'snapshot';
-        this.refreshInterval = 10000;  
+        this.refreshInterval = 10000;
       } else {
         this.mode = 'stream';
       }
     }
-    this.url = `${DomojaApiService.DomojaURL}/devices/${this.device.path}/${this.mode}`;
+    this.cameraUrl = `${DomojaApiService.DomojaURL}/devices/${this.device.path}/${this.mode}`;
     if (this.mode == 'snapshot') {
-      this.url += this.url.indexOf('?') >= 0 ? '&' : '?';
-      this.url += 't=';
+      this.url = this.cameraUrlProvider.getTimedUrl(this.cameraUrl);
+    } else {
+      this.url = this.cameraUrl;
     }
   }
 
   updateUrl() {
     if (this.mode == 'snapshot') {
-      var t = Date.now();
-      this.url = this.url.substring(0, this.url.lastIndexOf("t=") + 2) + t;
+      this.url = this.cameraUrlProvider.getNewTimedUrl(this.cameraUrl);
     }
   }
 
   onload() {
     if (this.mode == 'snapshot' && this.refreshInterval !== '' && this.refreshInterval !== undefined) {
+      this.cameraUrlProvider.setAsLoadedTimedUrl(this.cameraUrl, this.url)
       setTimeout(() => {
         this.updateUrl();
       }, this.refreshInterval);

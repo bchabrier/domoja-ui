@@ -17,6 +17,7 @@ import { PipesModule } from '../pipes/pipes.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PageComponentsProvider } from '../providers/page-components/page-components';
 import { PageListProvider } from '../providers/page-list/page-list';
+import { CameraUrlProvider } from '../providers/camera-url/camera-url';
 //: # (ImportPageComponents START)    
 import { AboutPage } from '../pages/about/about';
 import { HomePage } from '../pages/home/home';
@@ -97,6 +98,7 @@ DmjWalkingmanComponent,
     WebsocketService,
     PageComponentsProvider,
     PageListProvider,
+    CameraUrlProvider,
   ]
 })
 export class AppModule { }
