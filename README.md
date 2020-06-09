@@ -44,3 +44,9 @@ export class DmjDashboard<ComponentName> extends DmjDashboardComponent {
 }
 
 ```
+
+## Add a new widget
+
+Simply make a copy of an existing `dmj-` widget directory.
+
+Define `ngOnInit()` to initialize the widget.
