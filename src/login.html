@@ -202,6 +202,31 @@
   </ion-app>
 
   <script language="javascript">
+    if (false) {
+      console.log = function () {
+        for (var i in arguments) {
+          if (typeof arguments[i] == 'string') {
+            nmax = 2000;
+            alert(arguments[i].substring(0, nmax));
+            if (arguments[i].length > nmax) {
+              console.log(arguments[i].substring(nmax))
+            }
+          } else {
+            var output = '';
+            var tab = [];
+            for (var property in arguments[i]) {
+              tab.push(property);
+            }
+            tab.sort();
+            tab.forEach(property => {
+              output += property + ': ' + arguments[i][property] + '\n';
+            });
+            console.log(output);
+          }
+        }
+      }
+    }
+
     function doLogin() {
       var XHR = new XMLHttpRequest();
       var data = "username=" + getInputField("username").value
@@ -221,7 +246,10 @@
           window.location.href = '/';
         }
       }
-      DomojaURL = document.cookie.replace(/.*DomojaURL=([^;]*);.*/, '$1');
+      document.cookie = "DomojaURL=https://domo.bchabrier.com";
+      console.log(document.cookie);
+      DomojaURL = document.cookie.replace(/.*DomojaURL=([^;]*);?.*/, '$1');
+      console.log(DomojaURL + '/login.html');
       XHR.open('POST', DomojaURL + '/login.html');
       XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       XHR.send(data);
