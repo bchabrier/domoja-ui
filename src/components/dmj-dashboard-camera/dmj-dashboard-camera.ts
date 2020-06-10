@@ -20,6 +20,11 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
     if (this.args.camera) {
       this.cameraUrl = `${DomojaApiService.DomojaURL}/devices/${this.args.camera}/snapshot`;
       this.args.url = this.cameraUrlProvider.getTimedUrl(this.cameraUrl);
+      // Safari, probably for optimization, does not trigger onload when the URL is static / cached.
+      // Hence, we trigger it "manually"
+      setTimeout(() => {
+        this.onload();
+      }, 0);
     }
   }
 

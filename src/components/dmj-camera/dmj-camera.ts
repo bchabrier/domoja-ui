@@ -43,6 +43,11 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
     this.cameraUrl = `${DomojaApiService.DomojaURL}/devices/${this.device.path}/${this.mode}`;
     if (this.mode == 'snapshot') {
       this.url = this.cameraUrlProvider.getTimedUrl(this.cameraUrl);
+      // Safari, probably for optimization, does not trigger onload when the URL is static / cached.
+      // Hence, we trigger it "manually"
+      setTimeout(() => {
+        this.onload();
+      }, 0);
     } else {
       this.url = this.cameraUrl;
     }
