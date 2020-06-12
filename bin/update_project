@@ -8,6 +8,7 @@ START ()
 {
     _balise=$1
     _file=$2
+    grep -q "//: # ($_balise START)" $_file || echo "Warning: Balise '$_balise' not found in" $_file
     cp $_file $tmpfile.FULL
     >$tmpfile
     awk '{ print } /\/\/: # \('$_balise' START\)/ { exit }' $tmpfile.FULL > $tmpfile.$_balise.START
@@ -15,6 +16,7 @@ START ()
 
 END ()
 {
+    grep -q "//: # ($_balise END)" $_file || echo "Warning: Balise '$_balise' not found in" $_file
     awk '/\/\/: # \('$_balise' END\)/ { p = 1 } p == 1 { print } ' $tmpfile.FULL > $tmpfile.$_balise.END
     cat $tmpfile.$_balise.START $tmpfile $tmpfile.$_balise.END > $tmpfile.FULL
 
