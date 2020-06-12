@@ -20,7 +20,7 @@ export class AboutPage extends DmjPage implements OnInit, OnDestroy{
 
   ngOnInit() {
     super.ngOnInit();
-    this.api.getApp().subscribe(app => {
+    this.app_subscription = this.api.getApp().subscribe(app => {
       this.app = app;
     });
   }
