@@ -22,6 +22,7 @@ export class CameraUrlProvider {
 
   // returns a new timed url
   getNewTimedUrl(url: string): string {
+    if (!url) return url;
     let timedUrl = url;
     timedUrl += timedUrl.indexOf('?') >= 0 ? '&' : '?';
     timedUrl += "t=" + Date.now();
