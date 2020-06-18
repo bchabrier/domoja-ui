@@ -189,7 +189,7 @@
                   <div class="button-effect"></div>
                 </ion-item>
                 <button onclick="doLogin()" block="" ion-button="" ng-reflect-block="" class="button button-md button-default button-default-md button-block button-block-md"><span
-                    class="button-inner">Login</span>
+                    class="button-inner"><img id=spinner style="display:none;" src="/assets/imgs/LoadingBasketContents.gif" width=15px>Login</span>
                   <div class="button-effect"></div>
                 </button>
               </ion-list>
@@ -238,6 +238,7 @@
         console.log(this);
         if (this.responseText.match(/\/login\.html/)) {
           console.log('XHR response to /login.html contains ref to /login.html, wrong authentication?');
+          document.getElementById('spinner').style.display = "none";
           var error = document.getElementsByClassName("error")[0];
           error.innerHTML = "Identification erronée";
           setTimeout(() => { error.innerHTML = "&nbsp;" }, 2000);
@@ -250,6 +251,7 @@
       console.log(document.cookie);
       DomojaURL = document.cookie.replace(/.*DomojaURL=([^;]*);?.*/, '$1');
       console.log(DomojaURL + '/login.html');
+      document.getElementById('spinner').style.display = "inline";
       XHR.open('POST', DomojaURL + '/login.html');
       XHR.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       XHR.send(data);
