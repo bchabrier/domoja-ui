@@ -50,3 +50,11 @@ export class DmjDashboard<ComponentName> extends DmjDashboardComponent {
 Simply make a copy of an existing `dmj-` widget directory.
 
 Define `ngOnInit()` to initialize the widget.
+
+## Development
+
+# Add a new provider
+
+```
+$ ionic generate provider
+```
