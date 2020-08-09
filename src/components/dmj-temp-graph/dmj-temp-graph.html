@@ -1,0 +1,15 @@
+<table>
+    <tr>
+        <td>
+            <table style="table-layout:fixed;">
+                <tr *ngFor="let c of modes; let i = index">
+                    <td><button ion-button block small [outline]="mode!=modes[i]"
+                            (click)="changeMode(modes[i])">{{modes[i]}}</button></td>
+                </tr>
+            </table>
+        </td>
+        <td>
+            <div id="{{container}}"><span [innerHTML]=error></span></div>
+        </td>
+    </tr>
+</table>

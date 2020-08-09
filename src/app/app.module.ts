@@ -34,6 +34,7 @@ import { DmjDashboardIconComponent } from '../components/dmj-dashboard-icon/dmj-
 import { DmjDashboardTempoComponent } from '../components/dmj-dashboard-tempo/dmj-dashboard-tempo';
 import { DmjGraph } from '../components/dmj-graph/dmj-graph';
 import { DmjMultistateComponent } from '../components/dmj-multistate/dmj-multistate';
+import { DmjTempGraph } from '../components/dmj-temp-graph/dmj-temp-graph';
 import { DmjTempoColorComponent } from '../components/dmj-tempo-color/dmj-tempo-color';
 import { DmjTextComponent } from '../components/dmj-text/dmj-text';
 import { DmjToggleComponent } from '../components/dmj-toggle/dmj-toggle';
@@ -82,6 +83,7 @@ DmjDashboardIconComponent,
 DmjDashboardTempoComponent,
 DmjGraph,
 DmjMultistateComponent,
+DmjTempGraph,
 DmjTempoColorComponent,
 DmjTextComponent,
 DmjToggleComponent,
