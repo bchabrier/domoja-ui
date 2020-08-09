@@ -24,6 +24,7 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
       // Hence, we trigger it "manually"
       setTimeout(() => {
         this.onload();
+        this.updateUrl();
       }, 0);
     }
   }
