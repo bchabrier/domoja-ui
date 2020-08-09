@@ -39,7 +39,7 @@ export class DmjGraph extends DmjWidgetComponent implements OnInit, OnDestroy {
   ngOnInit() {
     super.ngOnInit();
     this.devices_subscription = this.api.getDevices().subscribe(devices => {
-      this.container = '_graph_' + this.device.name;
+      this.container = '_graph_' + this.device.path;
       this.updateChart();
     });
   }
