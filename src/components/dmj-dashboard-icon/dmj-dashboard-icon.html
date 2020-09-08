@@ -1,4 +1,5 @@
 <div class="frame">
-  <ion-icon class="largeIcon" name="{{icon}}" [style.color]="!color||color=='??'?'lightgrey':color"></ion-icon>
+  <ion-icon *ngIf="isIcon" class="largeIcon" name="{{icon}}" [style.color]="!color||color=='??'?'lightgrey':color"></ion-icon>
+  <img *ngIf="!isIcon" class="largeIcon" src="{{icon}}"/>
   <div class="verticallyCenteredOverlay" [innerHTML]=sanitizedText></div>
 </div>

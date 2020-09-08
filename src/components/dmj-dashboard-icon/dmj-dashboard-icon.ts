@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 export class DmjDashboardIconComponent extends DmjDashboardComponent implements OnInit, OnDestroy {
 
   icon: string = 'help';
+  isIcon: boolean = true;
   color: string = '';
   sanitizedText: SafeHtml = '';
   somethingchanged_subscription: Subscription;
@@ -23,6 +24,7 @@ export class DmjDashboardIconComponent extends DmjDashboardComponent implements 
     this.somethingchanged_subscription = this.somethingChanged.subscribe(() => {
       if (this.args && this.args.icon && this.args.icon !== "'unknown device'") {
         this.icon = this.args.icon;
+        this.isIcon = this.icon.match(/^[a-z0-9_-]+$/) && true;
         this.color = this.args.color;
         this.sanitizedText = this.args.text && this.sanitizer.bypassSecurityTrustHtml(this.args.text);
       }
