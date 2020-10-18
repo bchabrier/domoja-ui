@@ -225,7 +225,7 @@ export class DmjTempGraph extends DmjWidgetComponent implements OnInit, OnDestro
       case "Année":
         from = new Date(new Date().getFullYear(), 0, 1, 0, 0, 0, 0);
         to = new Date(new Date().getFullYear() + 1, 0, 1, 0, 0, 0, 0);
-        aggregate = "month";
+        aggregate = "week";
         options.hAxis.format = 'MMM';
         currentLabel = from.getFullYear().toString();
         pastLabel = (from.getFullYear() - 1).toString();
