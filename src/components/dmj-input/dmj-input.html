@@ -1,0 +1,5 @@
+<ion-textarea *ngIf="imageSize!='tiny'" placeholder="Message" autocomplete="off" rows=3 [(ngModel)]="value"
+    autocorrect="on" enterkeyhint="enter" inputmode="text"></ion-textarea>
+<ion-textarea *ngIf="imageSize=='tiny'" placeholder="Message" autocomplete="off" rows=1 [(ngModel)]="value"
+    autocorrect="on" enterkeyhint="enter" inputmode="text"></ion-textarea>
+<button ion-button small (click)="done()">Parler</button>

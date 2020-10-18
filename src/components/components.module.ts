@@ -13,6 +13,7 @@ import { DmjDashboardCameraComponent } from '../components/dmj-dashboard-camera/
 import { DmjDashboardIconComponent } from '../components/dmj-dashboard-icon/dmj-dashboard-icon';
 import { DmjDashboardTempoComponent } from '../components/dmj-dashboard-tempo/dmj-dashboard-tempo';
 import { DmjGraph } from '../components/dmj-graph/dmj-graph';
+import { DmjInputComponent } from '../components/dmj-input/dmj-input';
 import { DmjMultistateComponent } from '../components/dmj-multistate/dmj-multistate';
 import { DmjTempGraph } from '../components/dmj-temp-graph/dmj-temp-graph';
 import { DmjTempoColorComponent } from '../components/dmj-tempo-color/dmj-tempo-color';
@@ -35,6 +36,7 @@ DmjDashboardCameraComponent,
 DmjDashboardIconComponent,
 DmjDashboardTempoComponent,
 DmjGraph,
+DmjInputComponent,
 DmjMultistateComponent,
 DmjTempGraph,
 DmjTempoColorComponent,
@@ -78,6 +80,7 @@ export class ComponentsModule {
 "dmj-dashboard-icon": DmjDashboardIconComponent,
 "dmj-dashboard-tempo": DmjDashboardTempoComponent,
 "dmj-graph": DmjGraph,
+"dmj-input": DmjInputComponent,
 "dmj-multistate": DmjMultistateComponent,
 "dmj-temp-graph": DmjTempGraph,
 "dmj-tempo-color": DmjTempoColorComponent,
