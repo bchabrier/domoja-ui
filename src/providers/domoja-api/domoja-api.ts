@@ -45,7 +45,7 @@ export type App = {
 
 function isDate(value: string | Date) {
   return value instanceof Date || (
-    typeof value === 'string' && (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value) || /\d{2}:\d{2}:\d{2} GMT/.test(value))
+    typeof value === 'string' && (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) || /\d{2}:\d{2}:\d{2} GMT/.test(value)) && (new Date(value)).toString() != "Invalid Date"
   )
 }
 
