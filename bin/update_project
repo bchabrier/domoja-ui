@@ -101,3 +101,51 @@ for f in $loginFiles
 do
     cmp -s $newest $f || cp $newest $f
 done
+
+# update readme
+. ~/domoja/tools/update_readme -d
+
+INIT
+
+START widgetList
+(
+    for widgetfile in $(ls src/components/*/dmj-*.ts | grep -v .module. | grep -v dashboard- | grep -v dmj-unknown)
+    do
+        widget=$(awk -F"dmj-|'" '/selector:/ {print $3}' $widgetfile )
+        echo '###' Widget '`'$widget'`'
+        awk '/^ *\* /' $widgetfile | sed 's/^ *\* //'
+        echo '####' Example
+        echo '```'
+        echo 'devices:'
+        tmpfile=/tmp/w.$$
+        grep -E "widget: *\"?$widget[,: \"]" ~/domoja/config/demo.yml | 
+            grep -v '#.*' | # to not take commented lines
+            grep -E '} *' | # take only complete lines
+            head -1 | # keep only 1 example
+            sed -e 's/^ */  /' > $tmpfile # do proper indentation
+        if [ ! -s $tmpfile ]
+        then
+            # could not find a one line example, let's try with more lines
+            awk '
+                BEGIN { display=0  }
+                /[ ,]widget: *"*'"$widget"'[,: "]/ {
+                    display=1
+                    gsub(/^ */,"  ") # indent properly
+                    print
+                    next
+                }
+                /^ *- / { 
+                    display=0
+                }
+                display==1 { print }
+            ' ~/domoja/config/demo.yml > $tmpfile 
+        fi
+        cat $tmpfile
+        rm -f $tmpfile
+        echo '```'
+        echo
+    done
+) >$tmpreadme
+END
+
+CLEANUP
