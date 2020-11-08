@@ -1,0 +1,3 @@
+<meter *ngIf="type(device.state)=='meter'" min="{{min(device.state)}}" max="{{max(device.state)}}" low="{{low(device.state)}}" high="{{high(device.state)}}" optimum="{{optimum(device.state)}}" value="{{value(device.state)}}">{{value(device.state)}}%</meter>
+<progress *ngIf="type(device.state)!='meter'" max="{{max(device.state)}}" value="{{value(device.state)}}">{{value(device.state)}}%</progress>
+&nbsp;{{value(device.state)}}%

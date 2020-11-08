@@ -15,6 +15,7 @@ import { DmjDashboardTempoComponent } from '../components/dmj-dashboard-tempo/dm
 import { DmjGraph } from '../components/dmj-graph/dmj-graph';
 import { DmjInputComponent } from '../components/dmj-input/dmj-input';
 import { DmjMultistateComponent } from '../components/dmj-multistate/dmj-multistate';
+import { DmjProgressBarComponent } from '../components/dmj-progress-bar/dmj-progress-bar';
 import { DmjTempGraph } from '../components/dmj-temp-graph/dmj-temp-graph';
 import { DmjTempoColorComponent } from '../components/dmj-tempo-color/dmj-tempo-color';
 import { DmjTextComponent } from '../components/dmj-text/dmj-text';
@@ -38,6 +39,7 @@ DmjDashboardTempoComponent,
 DmjGraph,
 DmjInputComponent,
 DmjMultistateComponent,
+DmjProgressBarComponent,
 DmjTempGraph,
 DmjTempoColorComponent,
 DmjTextComponent,
@@ -82,6 +84,7 @@ export class ComponentsModule {
 "dmj-graph": DmjGraph,
 "dmj-input": DmjInputComponent,
 "dmj-multistate": DmjMultistateComponent,
+"dmj-progress-bar": DmjProgressBarComponent,
 "dmj-temp-graph": DmjTempGraph,
 "dmj-tempo-color": DmjTempoColorComponent,
 "dmj-text": DmjTextComponent,
