@@ -2,10 +2,9 @@ import { Component } from '@angular/core';
 import { DmjTextComponent } from '../dmj-text/dmj-text'
 
 /**
- * Generated class for the DmjTempoColorComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
+ * Display the tempo color, based on the device state (`Bleu` or `Blanc` or `Rouge` or `Indéterminé`).
+ * 
+ * See module domoja-tempo here: https://www.npmjs.com/package/domoja-tempo
  */
 @Component({
   selector: 'dmj-tempo-color',

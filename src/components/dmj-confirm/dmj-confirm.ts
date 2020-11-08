@@ -2,6 +2,21 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DmjWidgetComponent } from '../dmj-widget';
 import { AlertController } from 'ionic-angular';
 
+/**
+ * Displays a button that, when clicked, will open a confirmation dialog box.
+ * 
+ * #### Parameters
+ * `widget: "confirm:<button-label>:<button-color>:<confirm-title>:<confirm-message>:<confirm-buttons>"`
+ * 
+ * The device state will be changed to the value of the clicked confirm button.
+ * 
+ * - `<button-label>`: the label of the button
+ * - `<button-color>`: the color of the button
+ * - `<button-title>`: the title of the confirmation dialog box
+ * - `<button-message>`: the message of confirmation dialog box
+ * - `<button-buttons>`: the comma-separated names of the buttons that appear in the confirmation dialog box
+ * 
+ */
 @Component({
   selector: 'dmj-confirm',
   templateUrl: 'dmj-confirm.html'

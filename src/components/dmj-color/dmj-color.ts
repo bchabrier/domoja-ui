@@ -2,6 +2,11 @@ import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DmjWidgetComponent } from '../dmj-widget';
 
+/**
+ * Displays the device state with its color.
+ * 
+ * The state can be rgb (e.g. `#FFFFFF`) or literal (e.g. `orange`).
+ */
 @Component({
   selector: 'dmj-color',
   templateUrl: 'dmj-color.html'

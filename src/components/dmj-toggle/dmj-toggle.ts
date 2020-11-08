@@ -2,10 +2,7 @@ import { Component } from '@angular/core';
 import { DmjTextComponent } from '../dmj-text/dmj-text'
 
 /**
- * Generated class for the DmjToggleComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
+ * Display a device state as a toggle. The value `ON` display the toggle switched on. Other values display it switched off.
  */
 @Component({
   selector: 'dmj-toggle',

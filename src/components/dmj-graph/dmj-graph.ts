@@ -7,10 +7,9 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { GoogleCharts } from 'google-charts';
 
 /**
- * Generated class for the DmjGraphComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
+ * Display a graph described by the device state.
+ * 
+ * The device state should be a string representing a google "ChartWrapper" object, with "ChartType", "dataTable" and "options" properties (see specs on https://developers.google.com/chart/interactive/docs/reference#google.visualization.drawchart).
  */
 @Component({
   selector: 'dmj-graph',

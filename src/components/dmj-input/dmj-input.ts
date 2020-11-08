@@ -2,10 +2,12 @@ import { Component } from '@angular/core';
 import { DmjTextComponent } from '../dmj-text/dmj-text'
 
 /**
- * Generated class for the DmjInputComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
+ * Displays a text area with a button
+ * 
+ * When the button is clicked, the device state is changed to the value of the text area.
+ * 
+ * *Improvement needed*: pass the button label as a parameter
+ *  
  */
 @Component({
   selector: 'dmj-input',

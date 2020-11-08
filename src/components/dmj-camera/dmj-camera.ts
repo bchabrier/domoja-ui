@@ -4,10 +4,8 @@ import { CameraUrlProvider } from '../../providers/camera-url/camera-url'
 import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
 
 /**
- * Generated class for the DmjCameraComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
+ * Displays a camera.
+ * 
  */
 @Component({
   selector: 'dmj-camera',

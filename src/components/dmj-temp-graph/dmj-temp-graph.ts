@@ -17,10 +17,23 @@ type Configuration = {
 }
 
 /**
- * Generated class for the DmjTempGraphComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
+ * 
+ * Displays temperature graphs for the current and previous day, week, month and year.
+ * 
+ * The data is taken from the history of a given device, specified as a parameter.
+ * 
+ * #### Parameters
+ * `widget: "temp-graph:<device-path>"`
+ * 
+ * `<device-path>` should identify a device that has persistence enabled and aggregated, as in:
+ * ```
+ * devices:
+ *   - piscine:
+ *     - temperature: { type: sensor, widget: text, tags: 'piscine-page, piscine-temp-page', source: myZibase, id: "OS439157539", attribute: "tem", 
+ *       persistence: "mongo:temperature_piscine:0:aggregate:120000", 
+ *       name: "Température" }
+ * ```
+ * 
  */
 @Component({
   selector: 'dmj-temp-graph',

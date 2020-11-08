@@ -10,10 +10,9 @@ import {
 import { Device } from '../../providers/domoja-api/domoja-api';
 
 /**
- * Generated class for the DmjWalkingmanComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
+ * This widget is to be used to display presence detectors state. It represents a walking man, 
+ * highlighted in red when the state of the device is `ON`. When it turns to another value,
+ * the walking man fades to white progressively.
  */
 @Component({
   selector: 'dmj-walkingman',

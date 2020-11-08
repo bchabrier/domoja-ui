@@ -3,10 +3,8 @@ import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
 import { Subscription } from 'rxjs';
 
 /**
- * Generated class for the DmjCommComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
+ * Displays a communication icon when there is a communication with the server
+ * 
  */
 @Component({
   selector: 'dmj-comm',
