@@ -1,4 +1,4 @@
-<div class="pad">
+<div class="pad" [style.opacity]="args.optionActive=='ON'?1:0.3">
   <div class="todayColor" *ngIf="args.couleurDuJour=='Bleu'" style="background-color:#0097de">
     <span class="main-centered">Aujourd'hui</span>
   </div>
