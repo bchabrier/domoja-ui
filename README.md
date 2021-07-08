@@ -74,7 +74,7 @@ The device state should be a string representing a google "ChartWrapper" object,
 #### Example
 ```
 devices:
-  - planning-filtration-graph : { type: variable, widget: graph, tags: 'piscine-page', name: "Planning de filtration"} 
+  - planning-filtration-graph : { type: variable, debug: false, widget: graph, tags: 'piscine-page', name: "Planning de filtration"} 
 ```
 
 ### Widget `input`
