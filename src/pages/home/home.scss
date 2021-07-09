@@ -26,4 +26,10 @@ page-home {
        background: rgba(0,0,0,0.1);
        border: 1px blue solid;
     }
+
+    div.nowrap {
+       white-space: nowrap;
+       overflow: hidden;
+       text-overflow: ellipsis;      
+    }
 }

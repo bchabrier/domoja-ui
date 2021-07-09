@@ -18,7 +18,7 @@
     <ng-container *ngFor="let widget of widgets">
       <div [class]="'main-icon' + (widget.linkPage?' pointer':'')" (click)="openPage(widget.linkPage)">
         <dmj-dashboard-component [widget]="widget"></dmj-dashboard-component>
-        <div>
+        <div class="nowrap">
           {{interpretLabel(widget.label)}}
         </div>
       </div>
