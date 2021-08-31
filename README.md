@@ -196,6 +196,14 @@ devices:
   - porte: { type: sensor, widget: walkingman, tags: 'détecteurs, sensor-alarm', source: myIPX800, id: "INPUT5", name: "Porte garage du bas ou jardin", transform: "0=>OFF,1=>ON" }
 ```
 
+### Widget `zwave-config`
+Display a ZWave network configuration and allows editing it. 
+The state is a JSON string listing all nodes and their configuration.
+#### Example
+```
+devices:
+```
+
 
 [//]: # (widgetList END)
 

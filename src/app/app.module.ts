@@ -42,6 +42,7 @@ import { DmjTextComponent } from '../components/dmj-text/dmj-text';
 import { DmjToggleComponent } from '../components/dmj-toggle/dmj-toggle';
 import { DmjUnknownComponent } from '../components/dmj-unknown/dmj-unknown';
 import { DmjWalkingmanComponent } from '../components/dmj-walkingman/dmj-walkingman';
+import { DmjZwaveConfigComponent } from '../components/dmj-zwave-config/dmj-zwave-config';
 //: # (ImportWidgetComponents END)    
 
 export let p: any[] = [];
@@ -93,6 +94,7 @@ DmjTextComponent,
 DmjToggleComponent,
 DmjUnknownComponent,
 DmjWalkingmanComponent,
+DmjZwaveConfigComponent,
     //: # (WidgetComponents END)    
   ],
   providers: [

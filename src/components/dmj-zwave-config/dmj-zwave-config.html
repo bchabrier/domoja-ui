@@ -1,0 +1,150 @@
+{{error}}
+<div id="visNetwork" #visNetwork></div>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Manufacturer</th>
+        <th>Product</th>
+        <th>Product Code</th>
+        <th>Name</th>
+        <th>Status</th>
+    </tr>
+    <ng-container *ngFor="let node of state.nodes; let inode = index">
+        <tr (click)="select(inode===selectedNode?-1:inode)">
+            <td>{{node.id}}</td>
+            <td>{{node.manufacturer}}</td>
+            <td>{{node.product}}</td>
+            <td>{{node.productCode}}</td>
+            <td>{{node.name}}</td>
+            <td>{{nodeStatusAsString(node.status)}}</td>
+        </tr>
+        <tr *ngIf="node.usedBy && node.usedBy.length > 0" (click)="select(inode===selectedNode?-1:inode)">
+            <td></td>
+            <td colspan=100 small>
+                <p small>Utilisé par {{getUsedDevices(node)}}</p>
+            </td>
+        </tr>
+        <tr *ngIf="inode === selectedNode">
+            <td colspan=100>
+                <button ion-button small (click)="ping(node)">Ping</button>
+                <button ion-button small (click)="heal(node)" color="danger">Heal</button>
+                <button ion-button small (click)="refreshInfo(node)" color="danger">Refresh Node Info</button>
+            </td>
+        </tr>
+        <tr *ngIf="inode === selectedNode">
+            <td></td>
+            <td colspan=100>
+                <table>
+                    <ng-container *ngFor="let commandClassName of node.commandClassNames">
+                        <tr>
+                            <th colspan=100 style="text-align:left">{{commandClassName}}<button ion-button small
+                                    (click)="interviewCC(node, commandClassName)" color="danger"
+                                    style="vertical-align: middle;">Refresh Commands
+                                    Info</button></th>
+                        </tr>
+                        <ng-container *ngFor="let valueID of node.allValuesByCommandClassName[commandClassName]">
+                            <fieldset>
+                                <legend>[{{valueID.id}}]<span *ngIf="getDevicesFromId(valueID.id) as devices" style="color: green;"> <strong>({{devices}})</strong></span></legend>
+                                <label>{{valueID.propertyName}}:</label>
+                                <ng-container [ngSwitch]="valueID.valueMetadata.type">
+                                    <ng-container *ngSwitchCase="'boolean'">
+                                        <select [(ngModel)]="valueID.value">
+                                            <option *ngIf="valueID.value!==true&&valueID.value!==false"
+                                                [selected]="valueID.value"
+                                                [disabled]="!valueID.valueMetadata.writeable">
+                                                {{valueID.value}}
+                                            </option>
+                                            <option [selected]="valueID.value===true"
+                                                [disabled]="!valueID.valueMetadata.writeable">
+                                                true
+                                            </option>
+                                            <option [selected]="valueID.value===false"
+                                                [disabled]="!valueID.valueMetadata.writeable">
+                                                false
+                                            </option>
+                                        </select>
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'number'">
+                                        <ng-container *ngIf="valueID.valueMetadata.states">
+                                            <select [(ngModel)]="valueID.value">
+                                                <option *ngFor="let state of valueID.valueMetadata.states"
+                                                    [value]="state.key" [selected]="state.key==valueID.value"
+                                                    [disabled]="!valueID.valueMetadata.writeable">
+                                                    {{state.state}}
+                                                </option>
+                                            </select>
+                                        </ng-container>
+                                        <ng-container *ngIf="!valueID.valueMetadata.states">
+                                            <form *ngIf="valueID.valueMetadata.writeable" autocomplete="off"
+                                                style="display: inline;">
+                                                <!-- only supported at form level for number inputs -->
+                                                <input type="number" [(ngModel)]="valueID.value"
+                                                    [ngModelOptions]="{standalone: true}" autocomplete="off"
+                                                    [value]="valueID.value" [min]="valueID.valueMetadata.min"
+                                                    [max]="valueID.valueMetadata.max"
+                                                    [step]="valueID.valueMetadata.step"
+                                                    [disabled]="!valueID.valueMetadata.writeable">
+                                            </form>
+                                            <span *ngIf="!valueID.valueMetadata.writeable">{{valueID.value}}</span>
+                                        </ng-container>
+                                    </ng-container>
+                                    <ng-container *ngSwitchDefault>
+                                        <form *ngIf="valueID.valueMetadata.writeable" autocomplete="off"
+                                            style="display: inline;">
+                                            <!-- only supported at form level for number inputs -->
+                                            <input type="text" [(ngModel)]="valueID.value"
+                                                [ngModelOptions]="{standalone: true}" autocomplete="off"
+                                                [value]="valueID.value" [disabled]="!valueID.valueMetadata.writeable">
+                                        </form>
+                                        <span *ngIf="!valueID.valueMetadata.writeable">{{valueID.value}}</span>
+                                    </ng-container>
+                                </ng-container><span *ngIf="valueID.valueMetadata.unit">
+                                    {{valueID.valueMetadata.unit}}</span>
+                                <button ion-button small style="vertical-align: middle;"
+                                    [disabled]="valueID.value==getOriginalValue(node, valueID.id)"
+                                    (click)="setValueID(node,valueID)"
+                                    *ngIf="valueID.valueMetadata.writeable">Set</button>
+                                <br>
+                                <span *ngIf="valueID.valueMetadata.description">
+                                    <i style="font-size: smaller;">{{valueID.valueMetadata.description}}</i>
+                                </span>
+                            </fieldset>
+                            <!--
+                            <tr>
+                                <td style="white-space:nowrap" colspan=100>[{{valueID.id}}]</td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td>{{valueID.propertyName}}</td>
+                                <td>
+                                    <ng-container *ngIf="!valueID.valueMetadata.states">{{valueID.value}}<span
+                                            *ngIf="valueID.valueMetadata.unit">
+                                            {{valueID.valueMetadata.unit}}</span>
+                                    </ng-container>
+                                    <ng-container *ngIf="valueID.valueMetadata.states">
+                                        <select>
+                                            <option *ngFor="let state of valueID.valueMetadata.states"
+                                                [value]="state.key" [selected]="state.key==valueID.value"
+                                                [disabled]="!valueID.valueMetadata.writeable">
+                                                {{state.state}}
+                                            </option>
+                                        </select>
+                                    </ng-container>
+                                </td>
+                            </tr>
+                            <tr *ngIf="valueID.valueMetadata.description">
+                                <td colspan=100>
+                                    <i>{{valueID.valueMetadata.description}}</i>
+                                </td>
+                            </tr>-->
+                            <tr *ngIf="false">
+                                <!-- for debugging purposes -->
+                                <td colspan=100>{{valueID.valueMetadata|json}}</td>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                </table>
+            </td>
+        </tr>
+    </ng-container>
+</table>

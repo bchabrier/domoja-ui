@@ -22,6 +22,7 @@ import { DmjTextComponent } from '../components/dmj-text/dmj-text';
 import { DmjToggleComponent } from '../components/dmj-toggle/dmj-toggle';
 import { DmjUnknownComponent } from '../components/dmj-unknown/dmj-unknown';
 import { DmjWalkingmanComponent } from '../components/dmj-walkingman/dmj-walkingman';
+import { DmjZwaveConfigComponent } from '../components/dmj-zwave-config/dmj-zwave-config';
 //: # (ImportWidgetComponents END)  
 
 @NgModule({
@@ -46,6 +47,7 @@ DmjTextComponent,
 DmjToggleComponent,
 DmjUnknownComponent,
 DmjWalkingmanComponent,
+DmjZwaveConfigComponent,
         //: # (WidgetComponents END)    
 ],
     imports: [
@@ -91,6 +93,7 @@ export class ComponentsModule {
 "dmj-toggle": DmjToggleComponent,
 "dmj-unknown": DmjUnknownComponent,
 "dmj-walkingman": DmjWalkingmanComponent,
+"dmj-zwave-config": DmjZwaveConfigComponent,
             //: # (SelectorWidgetComponents END)    
         };
     }
