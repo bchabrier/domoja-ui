@@ -180,7 +180,7 @@ export class DomojaApiService {
           this.nbComms--
           this.nbCommsSubject.next(this.nbComms);
 
-          if (err.status == 401 || err.error.text.match(/\/login.html/)) {
+          if (err.status == 401 || (err.error && err.error.text && err.error.text.match(/\/login.html/))) {
             if (this.authentified != false) {
               this.authentified = false;
               this.authentifiedObservable.next(false);
@@ -191,7 +191,7 @@ export class DomojaApiService {
               this.authentifiedObservable.next(true);
             }
           }
-          if (err.status != 200 || (err.status == 200 && (err.error.text.match(/\/login.html/) || err.error.text != 'OK'))) {
+          if (err.status != 200 || (err.status == 200 && err.error && err.error.text && (err.error.text.match(/\/login.html/) || err.error.text != 'OK'))) {
             let errmsg = `${err.status} - ${err.statusText}`;
             console.log(errmsg);
             callback(err);
