@@ -11,8 +11,9 @@
     "build": "ionic build",
     "lint": "ionic-app-scripts lint",
     "ionic:serve:before": "bin/update_project",
+    "ionic:serve": "node --max-old-space-size=300 node_modules/@ionic/app-scripts/bin/ionic-app-scripts.js serve",
     "ionic:build:before": "bin/update_project",
-    "ionic:build": "NODE_OPTIONS='--max-old-space-size=16000' ionic-app-scripts build --prod --wwwDir ~/domoja/www",
+    "ionic:build": "node --max-old-space-size=3000 --memory-reducer node_modules/@ionic/app-scripts/bin/ionic-app-scripts.js build --prod --wwwDir ~/domoja/www",
     "ionic:build:after": "sed -e 's!<title>Domoja.*</title>!<title>Domoja</title>!' < src/login.html > ~/domoja/www/login.html; sed -i -e 's!\\.DomojaURL=\"[^\"]*\"!.DomojaURL=window.location.origin!' ~/domoja/www/build/main.js; cp src/manifest-auth.json ~/domoja/www; cd ~/domoja/www/assets/favicon && rm -f *.zip readme.txt;"
   },
   "config": {
