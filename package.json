@@ -13,7 +13,10 @@
     "ionic:serve:before": "bin/update_project",
     "ionic:build:before": "bin/update_project",
     "ionic:build": "NODE_OPTIONS='--max-old-space-size=16000' ionic-app-scripts build --prod --wwwDir ~/domoja/www",
-    "ionic:build:after": "sed -e 's!<title>Domoja.*</title>!<title>Domoja</title>!' < src/login.html > ~/domoja/www/login.html; sed -i -e 's!\\.DomojaURL=\"[^\"]*\"!.DomojaURL=window.location.origin!' ~/domoja/www/build/main.js; cp src/manifest-auth.json ~/domoja/www; cd ~/domoja/www/assets/favicon && rm -f *.zip readme.txt"
+    "ionic:build:after": "sed -e 's!<title>Domoja.*</title>!<title>Domoja</title>!' < src/login.html > ~/domoja/www/login.html; sed -i -e 's!\\.DomojaURL=\"[^\"]*\"!.DomojaURL=window.location.origin!' ~/domoja/www/build/main.js; cp src/manifest-auth.json ~/domoja/www; cd ~/domoja/www/assets/favicon && rm -f *.zip readme.txt;"
+  },
+  "config": {
+    "ionic_watch": "./watch.config.js"
   },
   "dependencies": {
     "@angular/animations": "5.2.11",
