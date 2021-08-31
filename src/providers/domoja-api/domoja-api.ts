@@ -22,6 +22,7 @@ export type Device = {
   state: string | Date,
   UpdateDate: string | Date,
   widget: string,
+  source: string,
 
   stateChange: (device: Device, value: string) => void,
   api: DomojaApiService,
