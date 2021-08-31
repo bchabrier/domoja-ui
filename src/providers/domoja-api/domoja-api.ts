@@ -251,6 +251,10 @@ export class DomojaApiService {
     return this.devicesObservable;
   }
 
+  getCurrentDevices(): Device[] {
+    return this.devices;
+  }
+
   setDeviceState(device: Device, state: string) {
     this.setValue(`/devices/${device.path}`, 'command', state, (err) => { });
   }
