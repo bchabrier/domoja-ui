@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/Rx';
 
 /*
   Generated class for the CameraUrlProvider provider.
@@ -10,6 +11,10 @@ import { Injectable } from '@angular/core';
 export class CameraUrlProvider {
 
   timedUrls: { [url: string]: string } = {};
+
+  // fullscreen image management
+  fullscreenRequester: any;
+  fullscreenImageUrlSubject: BehaviorSubject<string> = new BehaviorSubject('');
 
   constructor() {
     //console.log('Hello CameraUrlProvider Provider');
@@ -38,6 +43,20 @@ export class CameraUrlProvider {
       if (t < prev_t) return;
     }
     this.timedUrls[url] = timedUrl;
+  }
+
+  setFullscreenImage(requester: any, url: string) {
+    this.fullscreenRequester = requester;
+    this.fullscreenImageUrlSubject.next(url);
+  }
+
+  clearFullscreenImage() {
+    this.fullscreenRequester = null;
+    this.fullscreenImageUrlSubject.next('');
+  }
+
+  updateFullscreenImage(requester: any, url: string) {
+    if (this.fullscreenRequester === requester) this.fullscreenImageUrlSubject.next(url);
   }
 
 }

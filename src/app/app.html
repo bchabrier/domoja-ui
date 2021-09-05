@@ -18,3 +18,7 @@
 <!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus 
 [root]="rootPage" [rootParams]="rootParams" -->
 <ion-nav #content swipeBackEnabled="false"></ion-nav>
+<!-- Fullscreen image management -->
+<div id='fullscreen-div' class="image-modal {{fullscreenVisibleClass}}" (click)="closeModal()">
+    <img id='fullscreen-img' class="fullscreen-image" src="{{fullscreenImageUrl}}" />
+</div>

@@ -41,6 +41,7 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
     this.cameraUrl = `${DomojaApiService.DomojaURL}/devices/${this.device.path}/${this.mode}`;
     if (this.mode == 'snapshot') {
       this.url = this.cameraUrlProvider.getTimedUrl(this.cameraUrl);
+      this.cameraUrlProvider.updateFullscreenImage(this, this.url);
       // Safari, probably for optimization, does not trigger onload when the URL is static / cached.
       // Hence, we trigger it "manually"
       setTimeout(() => {
@@ -48,6 +49,7 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
       }, 0);
     } else {
       this.url = this.cameraUrl;
+      this.cameraUrlProvider.updateFullscreenImage(this, this.url);
     }
   }
 
@@ -59,6 +61,7 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
 
   onload() {
     if (this.mode == 'snapshot' && this.refreshInterval !== '' && this.refreshInterval !== undefined) {
+      this.cameraUrlProvider.updateFullscreenImage(this, this.url);
       this.cameraUrlProvider.setAsLoadedTimedUrl(this.cameraUrl, this.url)
       setTimeout(() => {
         this.updateUrl();
@@ -71,6 +74,10 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
       this.updateUrl();
     }, 5000);
   }
+
+  onclick() {
+    this.cameraUrlProvider.setFullscreenImage(this, this.cameraUrlProvider.getTimedUrl(this.cameraUrl));
+   }
 
 
 }

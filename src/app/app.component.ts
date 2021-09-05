@@ -4,8 +4,11 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { PageListProvider, componentPage } from '../providers/page-list/page-list';
+import { CameraUrlProvider } from '../providers/camera-url/camera-url'
 import { DomojaApiService } from '../providers/domoja-api/domoja-api';
 import { LoginPage } from '../pages/login/login';
+
+import createPanZoom, { PanZoom } from 'panzoom';
 
 @Component({
   templateUrl: 'app.html'
@@ -14,8 +17,12 @@ export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   pages: Array<componentPage> = [];
+  panzoom: PanZoom;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private pageList: PageListProvider, private api: DomojaApiService) {
+  fullscreenImageUrl = "";
+  fullscreenVisibleClass: 'hidden' | 'visible' = 'hidden';
+
+  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private pageList: PageListProvider, private api: DomojaApiService, private cameraUrlProvider: CameraUrlProvider) {
     this.initializeApp();
 
     this.pageList.subscribe(pages => {
@@ -41,6 +48,39 @@ export class MyApp {
         //this.nav.setRoot(LoginPage);
       }
     });
+
+    this.cameraUrlProvider.fullscreenImageUrlSubject.subscribe(url => {
+      if (!this.panzoom && url !== "") {
+
+        this.fullscreenImageUrl = ''; // to make sure the previous image is cleared whatever happens with the new one
+        this.fullscreenImageUrl = url;
+
+        const element = document.getElementById('fullscreen-img');
+
+        this.panzoom = createPanZoom(element, {
+          minZoom: 1,
+          smoothScroll: false,
+          onDoubleClick: function(e) {
+            // `e` - is current double click event.
+        
+            return false; // tells the library to not preventDefault, and not stop propagation
+          },
+          onTouch: function(e) {    
+            return false; // tells the library to not preventDefault, and not stop propagation
+          }
+
+        });
+
+        this.fullscreenVisibleClass = 'visible';
+      } else if (this.panzoom && url === "") {
+        this.fullscreenVisibleClass = 'hidden';
+        this.panzoom.dispose();
+        this.panzoom = null;
+      } else if (this.panzoom) {
+        this.fullscreenImageUrl = url;
+      }
+    });
+
   }
 
   loadHomePage() {
@@ -71,6 +111,11 @@ export class MyApp {
     this.nav.setRoot(page.component, {
       pageName: page.name
     });
+  }
+
+  closeModal() {
+    // replace is not known by this version of typescript
+    this.cameraUrlProvider.clearFullscreenImage();
   }
 }
 
