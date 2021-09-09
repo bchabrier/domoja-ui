@@ -10,8 +10,9 @@ import { Device } from '../../providers/domoja-api/domoja-api';
  * #### Parameters:
  * `widget: "multistate:<button-labels>:<button-colors>"`
  * 
- * - `<button-labels>`: a comma-separated list of the button labels
+ * - `<button-states>`: a comma-separated list of the button states
  * - `<button-colors>`: a comma-separated list of the button colors
+ * - `<button-labels>`: an optional comma-separated list of the button labels, displayed instead of the button state
  * 
  *  
  */
@@ -23,6 +24,7 @@ export class DmjMultistateComponent extends DmjWidgetComponent implements OnInit
 
   @Input() states: string[];
   @Input() colors: string[];
+  @Input() labels: string[];
 
   constructor() {
     super(null);
@@ -31,6 +33,7 @@ export class DmjMultistateComponent extends DmjWidgetComponent implements OnInit
   ngOnInit() {
     this.states = this.args[0] ? this.args[0].split(',') : []
     this.colors = this.args[1] ? this.args[1].split(',') : []
+    this.labels = this.args[2] ? this.args[2].split(',') : this.states
   }
 
   changeState(device: Device, state: string) {
