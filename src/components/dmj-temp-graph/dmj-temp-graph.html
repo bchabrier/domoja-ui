@@ -8,8 +8,8 @@
                 </tr>
             </table>
         </td>
-        <td>
-            <div id="{{container}}"><span [innerHTML]=error></span></div>
+        <td class="graphContainer" >
+            <div id="{{container}}"></div><span [innerHTML]=error></span><ion-spinner ngClass="graphSpinner {{loading?'spinnerVisible':'spinnerHidden'}}"></ion-spinner>
         </td>
     </tr>
 </table>

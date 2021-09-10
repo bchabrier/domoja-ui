@@ -57,6 +57,7 @@ export class DmjTempGraph extends DmjWidgetComponent implements OnInit, OnDestro
   sensor: Device;
   modes: string[] = [];
   mode: string;
+  @Input() loading = true;
 
 
   constructor(public api: DomojaApiService, private http: HttpClient) {
@@ -189,13 +190,17 @@ export class DmjTempGraph extends DmjWidgetComponent implements OnInit, OnDestro
 
         // if the request does not correspond to the selected mode, drop it
         // indeed it is probably an "old" request if the user changed his mind
-        if (this.mode == config.mode) this.graph.draw();
+        if (this.mode == config.mode) {
+          this.graph.draw();
+          this.loading = false;
+        }
 
       });
   }
 
   changeMode(mode: string) {
     if (mode == this.mode) return;
+    this.loading = true;
     let options = this.graph.getOptions();
     let from: Date;
     let to: Date;
