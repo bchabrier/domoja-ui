@@ -98,8 +98,9 @@ The color of the buttons can be specified.
 #### Parameters:
 `widget: "multistate:<button-labels>:<button-colors>"`
 
-- `<button-labels>`: a comma-separated list of the button labels
+- `<button-states>`: a comma-separated list of the button states
 - `<button-colors>`: a comma-separated list of the button colors
+- `<button-labels>`: an optional comma-separated list of the button labels, displayed instead of the button state
 
  
 #### Example
@@ -183,7 +184,7 @@ Display a device state as a toggle. The value `ON` display the toggle switched o
 #### Example
 ```
 devices:
-  - pompes : { type: device, widget: toggle, tags: 'aquarium-page', source: myZibase, id: "ZC8", name: "Pompes aquarium" }
+  - pompes : { type: device, widget: toggle, tags: 'aquarium-page', source: ZStick, id: "14-37-2-currentValue", name: "Pompes aquarium" }
 ```
 
 ### Widget `walkingman`
@@ -202,6 +203,7 @@ The state is a JSON string listing all nodes and their configuration.
 #### Example
 ```
 devices:
+  - config : { type: device, widget: "zwave-config", tags: 'zwave', source: ZStick, id: "1", attribute: "zwave_config", name: "ZWave config"} 
 ```
 
 
