@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs/Rx';
-import 'rxjs/add/operator/map';
 import { of } from 'rxjs/observable/of';
+import { tap } from 'rxjs/operators';
 import { WebsocketService } from '../websocket/websocket';
 //import { message } from '../../../../domoja/core/sources/source';
 
@@ -13,6 +13,34 @@ function deviceStateChange(device: Device, value: string) {
   device.api.setDeviceState(device, value);
 }
 
+const timeout = 10000; //10s
+class connectionNotification {
+  static connections: {
+    notif: connectionNotification,
+    timeout: number
+  }[] = [];
+
+  constructor(private api: DomojaApiService) {
+    connectionNotification.connections.push({
+      notif: this,
+      timeout: setTimeout(() => {
+        this.api.notifyConnectionClosed(this);
+      }, timeout)
+    });
+  }
+  close() {
+    const thisIndex = connectionNotification.connections.findIndex(cn => cn.notif === this);
+    if (thisIndex > -1) {
+      const thisKept = connectionNotification.connections[thisIndex];
+      clearTimeout(thisKept.timeout);
+      connectionNotification.connections.splice(thisIndex, 1);
+    } else {
+      // connectionNotification already deleted, probably because the timeout occurred before
+      // programmed close()
+      //console.error('Warning, non existent connectionNotification. Did you call notifyConnectionStarted()?');
+    }
+  }
+};
 
 export type Device = {
   name: string,
@@ -94,12 +122,10 @@ export class DomojaApiService {
         event.startTime = new Date(event.startTime);
         return this.appObservable.next(event);
       }
-      this.nbComms++;
-      this.nbCommsSubject.next(this.nbComms);
+      const notify = this.notifyConnectionStarted();
       this.applyEvent(event);
       this.devicesObservable.next(this.devices);
-      this.nbComms--;
-      this.nbCommsSubject.next(this.nbComms);
+      this.notifyConnectionClosed(notify);
     });
 
     this.loadAll();
@@ -114,9 +140,10 @@ export class DomojaApiService {
 
 
   private loadFromAPI<thing>(path: string, observer: Subject<thing>, transform?: (ret: thing) => thing) {
-    this.nbComms++
-    this.nbCommsSubject.next(this.nbComms);
-    this.http.get(`${DomojaApiService.DomojaURL}${path}`, { withCredentials: true }).subscribe(res => {
+    const notify = this.notifyConnectionStarted();
+    this.http.get(`${DomojaApiService.DomojaURL}${path}`, { withCredentials: true }).pipe(
+      this.notifyConnectionClosedOperator(notify)
+    ).subscribe(res => {
       if (this.authentified != true) {
         this.authentified = true;
         this.authentifiedObservable.next(true);
@@ -125,12 +152,8 @@ export class DomojaApiService {
       let noop: (ret: thing) => thing = (ret: thing) => ret;
       let tsf = transform || noop;
       observer.next(tsf(ret));
-      this.nbComms--
-      this.nbCommsSubject.next(this.nbComms);
     },
       err => {
-        this.nbComms--
-        this.nbCommsSubject.next(this.nbComms);
         if (err.status != 200) {
           if (err.status == 401) {
             if (this.authentified != false) {
@@ -147,13 +170,60 @@ export class DomojaApiService {
       })
   }
 
+  /**
+   * 
+   * An operator that checks if the user is authentified. 
+   * If not, then a redirect to the login page will occur
+   * 
+   * @returns the operator 
+   */
+  checkAuthentifiedOperator() {
+    return tap(res => {
+      console.log(res);
+      if (this.authentified != true) {
+        this.authentified = true;
+        this.authentifiedObservable.next(true);
+      }
+    },
+      err => {
+        console.error(err);
+        if (this.authentified != false) {
+          this.authentified = false;
+          this.authentifiedObservable.next(false);
+        }
+      });
+  }
+
+  /**
+   * To be used when initiating a connection to the api
+   * 
+   * @returns a connection notification to be passesd to notifyConnectionClosed
+   */
+  notifyConnectionStarted(): connectionNotification {
+    this.nbComms++;
+    this.nbCommsSubject.next(this.nbComms);
+    return new connectionNotification(this);
+  }
+
+  notifyConnectionClosed(notif: connectionNotification) {
+    notif.close();
+    this.nbComms--;
+    this.nbCommsSubject.next(this.nbComms);
+  }
+
+  notifyConnectionClosedOperator(notif: connectionNotification) {
+    const notify = () => {
+      this.notifyConnectionClosed(notif);
+    }
+    return tap(notify, notify);
+  }
+
   setValue(path: string, command: string, value: string, callback: (err: Error) => void) {
     this.setValues(path, [command], [value], callback);
   }
 
   setValues(path: string, commands: string[], values: string[], callback: (err: Error) => void) {
-    this.nbComms++
-    this.nbCommsSubject.next(this.nbComms);
+    const notif = this.notifyConnectionStarted();
     let body = ''
     for (let i = 0; i < commands.length; i++) {
       body += `${commands[i]}=${values[i]}&`;
@@ -164,40 +234,20 @@ export class DomojaApiService {
         headers: {
           'accept': 'text/html',
           'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }).subscribe(
+        },
+        responseType: 'text'
+      }).pipe(
+        this.checkAuthentifiedOperator(),
+        this.notifyConnectionClosedOperator(notif),
+      ).subscribe(
         res => {
-          // never called because content is not parseable
           console.log('POST done')
-          if (this.authentified != true) {
-            this.authentified = true;
-            this.authentifiedObservable.next(true);
-          }
-          this.nbComms--
-          this.nbCommsSubject.next(this.nbComms);
+          callback(null);
         },
         err => {
-          this.nbComms--
-          this.nbCommsSubject.next(this.nbComms);
-
-          if (err.status == 401 || (err.error && err.error.text && err.error.text.match(/\/login.html/))) {
-            if (this.authentified != false) {
-              this.authentified = false;
-              this.authentifiedObservable.next(false);
-            }
-          } else {
-            if (this.authentified != true) {
-              this.authentified = true;
-              this.authentifiedObservable.next(true);
-            }
-          }
-          if (err.status != 200 || (err.status == 200 && err.error && err.error.text && (err.error.text.match(/\/login.html/) || err.error.text != 'OK'))) {
-            let errmsg = `${err.status} - ${err.statusText}`;
-            console.log(errmsg);
-            callback(err);
-          } else {
-            callback(null);
-          }
+          let errmsg = `${err.status} - ${err.statusText}`;
+          console.error(errmsg);
+          callback(err);
         }
       );
   }
@@ -232,26 +282,24 @@ export class DomojaApiService {
   }
 
   getDevicesFromAPI(): Observable<Array<Device>> {
-    this.nbComms++
-    this.nbCommsSubject.next(this.nbComms);
-    return this.http.get(`${DomojaApiService.DomojaURL}/devices`, { withCredentials: true }).catch((err, caught) => {
-      return of([]);
-    }).map(res => {
-      console.log('done real API call');
-      let ret: Array<Device> = <any>res;
-      (<any>res).forEach(element => {
-        let state = element.state;
-        if (isDate(state)) {
-          // restore dates to real dates
-          element.state = new Date(state);
-        }
-        element.UpdateDate = new Date(element.UpdateDate ? element.UpdateDate : null);
-        ret[element.path] = element;
+    const notif = this.notifyConnectionStarted()
+      ; return this.http.get(`${DomojaApiService.DomojaURL}/devices`, { withCredentials: true }).catch((err, caught) => {
+        return of([]);
+      }).map(res => {
+        console.log('done real API call');
+        let ret: Array<Device> = <any>res;
+        (<any>res).forEach(element => {
+          let state = element.state;
+          if (isDate(state)) {
+            // restore dates to real dates
+            element.state = new Date(state);
+          }
+          element.UpdateDate = new Date(element.UpdateDate ? element.UpdateDate : null);
+          ret[element.path] = element;
+        });
+        this.notifyConnectionClosed(notif);
+        return ret;
       });
-      this.nbComms--
-      this.nbCommsSubject.next(this.nbComms);
-      return ret;
-    });
   }
 
   getDevices(): Observable<Array<Device>> {
