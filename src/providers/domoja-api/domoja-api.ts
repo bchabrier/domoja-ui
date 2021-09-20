@@ -187,9 +187,11 @@ export class DomojaApiService {
     },
       err => {
         console.error(err);
-        if (this.authentified != false) {
-          this.authentified = false;
-          this.authentifiedObservable.next(false);
+        if (err.status == 401) {
+          if (this.authentified != false) {
+            this.authentified = false;
+            this.authentifiedObservable.next(false);
+          }
         }
       });
   }
@@ -246,7 +248,7 @@ export class DomojaApiService {
         },
         err => {
           let errmsg = `${err.status} - ${err.statusText}`;
-          console.error(errmsg);
+          console.error("Error in setValues:", errmsg);
           callback(err);
         }
       );
