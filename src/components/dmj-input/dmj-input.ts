@@ -22,7 +22,8 @@ export class DmjInputComponent extends DmjTextComponent {
   }
 
   done() {
-    this.device.stateChange(this.device, this.value);
+    const prevState = this.device.state;
+    this.device.stateChange(this.device, this.value, err => {if (err) this.device.state = prevState});
     this.value = '';
   }
 

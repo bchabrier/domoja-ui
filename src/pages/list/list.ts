@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, Toggle } from 'ionic-angular';
 import { DomojaApiService, Device, App } from '../../providers/domoja-api/domoja-api'
 import { PageListProvider } from '../../providers/page-list/page-list';
 import { DmjPage } from '../dmj-page';
@@ -61,6 +61,18 @@ export class ListPage extends DmjPage implements OnInit, OnDestroy {
         this.devices_subscription.unsubscribe();
         this.pages_subscription.unsubscribe();
         super.ngOnDestroy();
+    }
+
+    changeState(device: Device, state: string, event: Toggle) {
+        if ((device as any).inCancelMode) return;
+        device.stateChange(device, state, err => {
+            if (err) {
+                // should display an error banner?
+                (device as any).inCancelMode = true;
+                event.setValue(!event.value)
+                delete (device as any).inCancelMode;
+            }
+        });
     }
 
     updateGroups() {

@@ -37,7 +37,8 @@ export class DmjMultistateComponent extends DmjWidgetComponent implements OnInit
   }
 
   changeState(device: Device, state: string) {
-    device.stateChange(device, state);
+    const prevState = this.device.state;
+    device.stateChange(device, state, err => {if (err) this.device.state = prevState});
   }
 
 }

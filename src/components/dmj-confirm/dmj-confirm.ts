@@ -50,7 +50,8 @@ export class DmjConfirmComponent extends DmjWidgetComponent implements OnInit {
           text: text,
           //role: 'cancel',
           handler: () => {
-            this.device.stateChange(this.device, text);
+            const prevState = this.device.state;
+            this.device.stateChange(this.device, text, err => { if (err) this.device.state = prevState; });
           }
         }
       })

@@ -8,9 +8,9 @@ import { WebsocketService } from '../websocket/websocket';
 
 type message = any;
 
-function deviceStateChange(device: Device, value: string) {
+function deviceStateChange(device: Device, value: string, callback: (err: Error) => void) {
   console.log(device, value);
-  device.api.setDeviceState(device, value);
+  device.api.setDeviceState(device, value, callback);
 }
 
 const timeout = 10000; //10s
@@ -52,7 +52,7 @@ export type Device = {
   widget: string,
   source: string,
 
-  stateChange: (device: Device, value: string) => void,
+  stateChange: (device: Device, value: string, callback: (err: Error) => void) => void,
   api: DomojaApiService,
 }
 
@@ -310,8 +310,9 @@ export class DomojaApiService {
     return this.devices;
   }
 
-  setDeviceState(device: Device, state: string) {
-    this.setValue(`/devices/${device.path}`, 'command', state, (err) => { });
+  setDeviceState(device: Device, state: string, callback: (err: Error) => void) {
+    const prevState = device.state;
+    this.setValue(`/devices/${device.path}`, 'command', state, callback);
   }
 
   private loadPagesFromAPI(observer: BehaviorSubject<Array<Page>>) {

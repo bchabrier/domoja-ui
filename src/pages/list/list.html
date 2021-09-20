@@ -22,7 +22,7 @@
           <dmj-widget [device]="device" [imageSize]="imageSize" item-end *ngSwitchDefault></dmj-widget>
           <!--for some reason ion-toggle does not support to be inside another component,
               causing dmj-toggle to not work -->
-          <ion-toggle checked="{{device.state=='ON'}}" (ionChange)="device.stateChange(device, $event.value?'ON':'OFF')"
+          <ion-toggle checked="{{device.state=='ON'}}" (ionChange)="changeState(device, $event.value?'ON':'OFF', $event)"
             *ngSwitchCase="'toggle'"></ion-toggle>
           <button ion-button icon-only *ngSwitchCase="'light:bulb:yellow'" item-end clear>
             <img src="assets/imgs/smarthome/light-on.svg" height=122% />
@@ -42,7 +42,7 @@
               <dmj-widget [device]="device" [imageSize]="imageSize" *ngSwitchDefault></dmj-widget>
               <!--for some reason ion-toggle does not support to be inside another component,
               causing dmj-toggle to not work -->
-              <ion-toggle checked="{{device.state=='ON'}}" (ionChange)="device.stateChange(device, $event.value?'ON':'OFF')"
+              <ion-toggle checked="{{device.state=='ON'}}" (ionChange)="changeState(device, $event.value?'ON':'OFF', $event)"
                 *ngSwitchCase="'toggle'"></ion-toggle>
               <button ion-button icon-only *ngSwitchCase="'light:bulb:yellow'" clear>
                 <img src="assets/imgs/smarthome/light-on.svg" height=122% />
