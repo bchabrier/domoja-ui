@@ -187,6 +187,15 @@ devices:
   - pompes : { type: device, widget: toggle, tags: 'aquarium-page', source: ZStick, id: "14-37-2-currentValue", name: "Pompes aquarium" }
 ```
 
+### Widget `vis-graph`
+Display a graph described by the device state.
+
+The device state should be a string representing a google "ChartWrapper" object, with "ChartType", "dataTable" and "options" properties (see specs on https://developers.google.com/chart/interactive/docs/reference#google.visualization.drawchart).
+#### Example
+```
+devices:
+```
+
 ### Widget `walkingman`
 This widget is to be used to display presence detectors state. It represents a walking man, 
 highlighted in red when the state of the device is `ON`. When it turns to another value,

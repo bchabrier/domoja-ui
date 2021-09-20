@@ -21,6 +21,7 @@ import { DmjTempoColorComponent } from '../components/dmj-tempo-color/dmj-tempo-
 import { DmjTextComponent } from '../components/dmj-text/dmj-text';
 import { DmjToggleComponent } from '../components/dmj-toggle/dmj-toggle';
 import { DmjUnknownComponent } from '../components/dmj-unknown/dmj-unknown';
+import { DmjVisGraph } from '../components/dmj-vis-graph/dmj-vis-graph';
 import { DmjWalkingmanComponent } from '../components/dmj-walkingman/dmj-walkingman';
 import { DmjZwaveConfigComponent } from '../components/dmj-zwave-config/dmj-zwave-config';
 //: # (ImportWidgetComponents END)  
@@ -46,6 +47,7 @@ DmjTempoColorComponent,
 DmjTextComponent,
 DmjToggleComponent,
 DmjUnknownComponent,
+DmjVisGraph,
 DmjWalkingmanComponent,
 DmjZwaveConfigComponent,
         //: # (WidgetComponents END)    
@@ -92,6 +94,7 @@ export class ComponentsModule {
 "dmj-text": DmjTextComponent,
 "dmj-toggle": DmjToggleComponent,
 "dmj-unknown": DmjUnknownComponent,
+"dmj-vis-graph": DmjVisGraph,
 "dmj-walkingman": DmjWalkingmanComponent,
 "dmj-zwave-config": DmjZwaveConfigComponent,
             //: # (SelectorWidgetComponents END)    

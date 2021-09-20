@@ -1937,6 +1937,11 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.8.tgz#e412b8d33f5e006593cbd3cee6df9f2cebbe802a"
   integrity sha512-qkIilPUYcNhJpd33n0GBXTB1MMPp14TxEsEs0pTrsSVucApsYzW5V+Q8Qxhik6KU3evy+qkAAowTByymK0avdg==
 
+hammerjs@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/hammerjs/-/hammerjs-2.0.8.tgz#04ef77862cff2bb79d30f7692095930222bf60f1"
+  integrity sha1-BO93hiz/K7edMPdpIJWTAiK/YPE=
+
 har-schema@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/har-schema/-/har-schema-2.0.0.tgz#a94c2224ebcac04782a0d9035521f24735b7ec92"
@@ -2849,6 +2854,11 @@ mixin-deep@^1.2.0:
   integrity sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ==
   dependencies:
     minimist "^1.2.5"
+
+moment@^2.29.1:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
 ms@2.0.0:
   version "2.0.0"
@@ -4591,6 +4601,11 @@ vis-network@^9.0.5:
   version "9.0.5"
   resolved "https://registry.yarnpkg.com/vis-network/-/vis-network-9.0.5.tgz#b2a0e4579e4a47add1b65ab90146e9751fdbb0a7"
   integrity sha512-+pun7tQP5UruDo+4GZemeZXoD9fIEApWp5IMwHZ8J29kAGvLN5CPJsqAwaSlty6vEVfmIElfOMZk5bilSRQU5Q==
+
+vis-timeline@^7.4.9:
+  version "7.4.9"
+  resolved "https://registry.yarnpkg.com/vis-timeline/-/vis-timeline-7.4.9.tgz#7ed225a04b521cb6c2d603e498953b1222650806"
+  integrity sha512-+Mb829u4Jq9qPhh6EHAa7DRBEwXW0AclaXndxAC7e772oI5pMSAbhbKsQXsPYRPkf9vtac3/US+WPHJQYjGsRA==
 
 vis-util@^5.0.2:
   version "5.0.2"
