@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DmjDashboardComponent } from '../dmj-dashboard-component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'dmj-dashboard-tempo',
@@ -7,7 +8,7 @@ import { DmjDashboardComponent } from '../dmj-dashboard-component';
 })
 export class DmjDashboardTempoComponent extends DmjDashboardComponent {
 
-  constructor() {
-    super();
+  constructor(sanitizer: DomSanitizer) {
+    super(sanitizer);
   }
 }

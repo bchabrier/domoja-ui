@@ -10,11 +10,11 @@
     "clean": "ionic-app-scripts clean",
     "build": "ionic build",
     "lint": "ionic-app-scripts lint",
-    "ionic:serve:before": "bin/update_project; sed -i -e \"s!^\\(import { Network } from 'vis-network/peer';.*\\)!//\\1!\" -e \"s!^//\\(import { Network } from 'vis-network/dist/vis-network.js';.*\\)!\\1!\" -e \"s!^\\(import { DataSet } from 'vis-data/peer';.*\\)!//\\1!\" -e \"s!^//\\(import { DataSet } from 'vis-data/dist/esm.js';.*\\)!\\1!\" src/components/dmj-zwave-config/dmj-zwave-config.ts;",
+    "ionic:serve:before": "bin/update_project; bin/patch_files set;",
     "ionic:serve": "node --max-old-space-size=300 node_modules/@ionic/app-scripts/bin/ionic-app-scripts.js serve --consolelogs",
-    "ionic:build:before": "bin/update_project; sed -i -e \"s!^\\(import { Network } from 'vis-network/peer';.*\\)!//\\1!\" -e \"s!^//\\(import { Network } from 'vis-network/dist/vis-network.js';.*\\)!\\1!\" -e \"s!^\\(import { DataSet } from 'vis-data/peer';.*\\)!//\\1!\" -e \"s!^//\\(import { DataSet } from 'vis-data/dist/esm.js';.*\\)!\\1!\" src/components/dmj-zwave-config/dmj-zwave-config.ts;",
+    "ionic:build:before": "bin/update_project; bin/patch_files set;",
     "ionic:build": "node --max-old-space-size=3000 --memory-reducer node_modules/@ionic/app-scripts/bin/ionic-app-scripts.js build --prod --wwwDir ~/domoja/www",
-    "ionic:build:after": "sed -i -e \"s!^//\\(import { Network } from 'vis-network/peer';.*\\)!\\1!\" -e \"s!^\\(import { Network } from 'vis-network/dist/vis-network.js';.*\\)!//\\1!\" -e \"s!^//\\(import { DataSet } from 'vis-data/peer';.*\\)!\\1!\" -e \"s!^\\(import { DataSet } from 'vis-data/dist/esm.js';.*\\)!//\\1!\" src/components/dmj-zwave-config/dmj-zwave-config.ts; sed -e 's!<title>Domoja.*</title>!<title>Domoja</title>!' < src/login.html > ~/domoja/www/login.html; sed -i -e 's!\\.DomojaURL=\"[^\"]*\"!.DomojaURL=window.location.origin!' ~/domoja/www/build/main.js; cp src/manifest-auth.json ~/domoja/www; cd ~/domoja/www/assets/favicon && rm -f *.zip readme.txt;"
+    "ionic:build:after": "bin/patch_files unset; sed -e 's!<title>Domoja.*</title>!<title>Domoja</title>!' < src/login.html > ~/domoja/www/login.html; sed -i -e 's!\\.DomojaURL=\"[^\"]*\"!.DomojaURL=window.location.origin!' ~/domoja/www/build/main.js; cp src/manifest-auth.json ~/domoja/www; cd ~/domoja/www/assets/favicon && rm -f *.zip readme.txt;"
   },
   "config": {
     "ionic_watch": "./watch.config.js"
@@ -38,6 +38,7 @@
     "@types/web-animations-js": "2.2.0",
     "google-charts": "^2.0.0",
     "hammerjs": "^2.0.8",
+    "intl-messageformat": "^9.9.2",
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
     "keycharm": "^0.4.0",
@@ -59,5 +60,5 @@
     "@ionic/app-scripts": "3.2.1",
     "typescript": "2.6.2"
   },
-  "description": "An Ionic project"
+  "description": "A Mobile UI for Domoja"
 }

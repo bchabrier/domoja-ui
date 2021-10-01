@@ -1,1 +1,1 @@
-{{device.state | friendlyDate}}
+<span *ngIf="string!=null" [innerHTML]="string | friendlyDate"></span><span *ngIf="string==null">{{device.state | friendlyDate}}</span><span class=error *ngIf="error!=''" [innerHTML]=error></span>

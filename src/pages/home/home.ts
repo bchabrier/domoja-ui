@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { NavController, NavParams } from 'ionic-angular';
-import { PageListProvider, componentPage, interpretLabel } from '../../providers/page-list/page-list';
+import { PageListProvider, componentPage } from '../../providers/page-list/page-list';
 import { DomojaApiService, App } from '../../providers/domoja-api/domoja-api';
+import { interpretLabel } from '../../directives/dmj-widget-host';
+import { DomSanitizer } from '@angular/platform-browser';
 import { DmjPage } from '../dmj-page';
 
 @Component({
@@ -17,7 +19,7 @@ export class HomePage extends DmjPage implements OnInit, OnDestroy {
   app_subscription: Subscription;
   pagelist_subscription: Subscription;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public api: DomojaApiService, public pageList: PageListProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public api: DomojaApiService, public pageList: PageListProvider, public sanitizer: DomSanitizer) {
     super(navCtrl, navParams, api, pageList);
   }
 
@@ -59,7 +61,7 @@ export class HomePage extends DmjPage implements OnInit, OnDestroy {
   }
 
   interpretLabel(label: string) {
-    return interpretLabel(label, this.devices);
+    return interpretLabel(this.sanitizer, label, this.devices);
   }
 
 }

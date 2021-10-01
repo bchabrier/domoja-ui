@@ -1,11 +1,11 @@
 import { Component, Input, ComponentFactoryResolver, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { DomojaApiService, Device } from '../providers/domoja-api/domoja-api'
+import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 
-import { DmjWidgetHostDirective } from '../directives/dmj-widget-host';
+import { DmjWidgetHostDirective, interpretLabel } from '../directives/dmj-widget-host';
 
 import { ComponentsModule } from './components.module';
-import { interpretLabel } from '../providers/page-list/page-list';
 
 import { BehaviorSubject } from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
@@ -27,7 +27,7 @@ export class DmjDashboardComponent implements OnInit, OnDestroy {
   somethingChanged: BehaviorSubject<number>;
   devices_subscription: Subscription;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver = null, private api: DomojaApiService = null) {
+  constructor(public sanitizer: DomSanitizer, private componentFactoryResolver: ComponentFactoryResolver = null, private api: DomojaApiService = null) {
     this.somethingChanged = new BehaviorSubject<number>(0);
   }
 
@@ -77,7 +77,7 @@ export class DmjDashboardComponent implements OnInit, OnDestroy {
 
 
   interpretLabel(label: string, devices: Map<string, Device>) {
-    return interpretLabel(label, devices);
+    return interpretLabel(this.sanitizer, label, devices);
   }
 
   getDeviceState(path: string) {

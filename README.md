@@ -32,6 +32,8 @@ devices:
 Displays the device state with its color.
 
 The state can be rgb (e.g. `#FFFFFF`) or literal (e.g. `orange`).
+Note:
+`widget: 'color'` is equivalent to `widget: 'text!<span style="background-color:%s;color:black">%s</span>'`
 #### Example
 ```
 devices:
@@ -74,7 +76,7 @@ The device state should be a string representing a google "ChartWrapper" object,
 #### Example
 ```
 devices:
-  - planning-filtration-graph : { type: variable, debug: false, widget: graph, tags: 'piscine-page', name: "Planning de filtration"} 
+  - planning-filtration-graph : { type: variable, debug: false, widget: graph, tags: 'piscine-page', name: "Filtration"} 
 ```
 
 ### Widget `input`
@@ -173,6 +175,24 @@ devices:
 
 ### Widget `text`
 Displays the device state as simple text. When a date is recognized, it is friendly displayed.
+A format can be added following a character separator not used in the format.
+The supported formats are: 
+- intl-messageformat(https://formatjs.io/docs/core-concepts/icu-syntax and https://unicode-org.github.io/icu/userguide/format_parse/)
+- %j: display as JSON object
+- %s: display as string
+- %d: display as Number
+Examples:
+- "text" to display the value without interpreting the HTML tags 
+- "text:%s" to display the value while interpreting the HTML tags 
+- "text:Temp is <b>{value, number}<b> °C" to format a number in an HTML string
+- "text:Part is {value, number, ::percent}" to format a number as a percentage
+- "text:Amount is <b>{value, number, ::sign-always compact-short currency/GBP}<b>" to format a number with a currency
+- "text:Temp is {value, number, :: .00 } °C" to format a number with 2 fraction digit
+- "text:Temp is {value, number, :: .0# } °C" to format a number with at least 1 fraction digit
+- "text:Temp is {value, number, :: percent .00 } °C" to format a number as a percentage with 2 fraction digit
+- "text/JSON is: %j" to format a value as a JSON
+- "text: value = %d" to format a value as a number
+
 #### Example
 ```
 devices:
@@ -194,6 +214,7 @@ The device state should be a string representing a google "ChartWrapper" object,
 #### Example
 ```
 devices:
+  - presence-timeline : { type: variable, debug: false, widget: vis-graph, tags: 'semeria', name: "Présence Séméria"} 
 ```
 
 ### Widget `walkingman`

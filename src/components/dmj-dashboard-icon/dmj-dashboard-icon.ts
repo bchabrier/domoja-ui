@@ -15,8 +15,8 @@ export class DmjDashboardIconComponent extends DmjDashboardComponent implements 
   sanitizedText: SafeHtml = '';
   somethingchanged_subscription: Subscription;
 
-  constructor(private sanitizer: DomSanitizer) {
-    super();
+  constructor(sanitizer: DomSanitizer) {
+    super(sanitizer);
   }
 
   ngOnInit() {

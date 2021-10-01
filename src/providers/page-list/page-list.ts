@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Page, DomojaApiService, Device } from '../domoja-api/domoja-api';
+import { Page, DomojaApiService } from '../domoja-api/domoja-api';
 
 export type componentPage = {
   name: string,
@@ -9,22 +9,6 @@ export type componentPage = {
   args: { [key: string]: string }
 };
 
-export function interpretLabel(label: string, devices: Map<string, Device>): string {
-  let re = /\$\{([^}]+)\}/;
-
-  let result = label;
-
-  let m: RegExpMatchArray;
-
-  while (m = result.match(re)) {
-    let devicePath = m[1];
-    let value = devices.get(devicePath) ? devices.get(devicePath).state : "'unknown device'";
-    value = value || '??';
-    result = result.replace(re, value.toString());
-  }
-
-  return result;
-}
 
 @Injectable()
 export class PageListProvider {

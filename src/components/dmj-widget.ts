@@ -29,7 +29,14 @@ export class DmjWidgetComponent implements OnInit, OnDestroy {
 
     if (!this.componentFactoryResolver) return;
 
-    let args = this.device.widget && this.device.widget.split(':') || [undefined];
+    let sepIndex = this.device.widget && this.device.widget.search(/[^-a-zA-Z0-9]/);
+    let args = [undefined];
+
+    if (this.device.widget) {
+      args = sepIndex >= 0 && this.device.widget.split(this.device.widget[sepIndex]) || [this.device.widget];
+    }
+    if (sepIndex >= 0)
+      args = this.device.widget && this.device.widget.split(this.device.widget[sepIndex]) || [undefined];
 
     let widget = 'dmj-' + args[0];
     args.splice(0, 1);

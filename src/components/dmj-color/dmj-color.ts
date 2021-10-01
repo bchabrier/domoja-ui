@@ -6,6 +6,8 @@ import { DmjWidgetComponent } from '../dmj-widget';
  * Displays the device state with its color.
  * 
  * The state can be rgb (e.g. `#FFFFFF`) or literal (e.g. `orange`).
+ * Note:
+ * `widget: 'color'` is equivalent to `widget: 'text!<span style="background-color:%s;color:black">%s</span>'`
  */
 @Component({
   selector: 'dmj-color',

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef, HostBinding } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DmjWidgetComponent } from '../dmj-widget';
 import { DomojaApiService } from '../../providers/domoja-api/domoja-api';

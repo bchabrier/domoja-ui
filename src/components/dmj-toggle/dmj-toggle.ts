@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { DmjTextComponent } from '../dmj-text/dmj-text'
 
 /**
@@ -10,8 +11,8 @@ import { DmjTextComponent } from '../dmj-text/dmj-text'
 })
 export class DmjToggleComponent extends DmjTextComponent {
 
-  constructor() {
-    super()
+  constructor(sanitizer: DomSanitizer) {
+    super(sanitizer)
   }
 
 }

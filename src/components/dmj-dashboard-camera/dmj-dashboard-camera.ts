@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DmjDashboardComponent } from '../dmj-dashboard-component';
 import { DomojaApiService, Device } from '../../providers/domoja-api/domoja-api'
 import { CameraUrlProvider } from '../../providers/camera-url/camera-url'
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'dmj-dashboard-camera',
@@ -12,8 +13,8 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
   camera: Device;
   cameraUrl: string;
 
-  constructor(private cameraUrlProvider: CameraUrlProvider) {
-    super();
+  constructor(private cameraUrlProvider: CameraUrlProvider, sanitizer: DomSanitizer) {
+    super(sanitizer);
   }
 
   ngOnInit() {
