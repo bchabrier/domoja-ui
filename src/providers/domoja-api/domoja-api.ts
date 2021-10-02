@@ -313,7 +313,6 @@ export class DomojaApiService {
   }
 
   setDeviceState(device: Device, state: string, callback: (err: Error) => void) {
-    const prevState = device.state;
     this.setValue(`/devices/${device.path}`, 'command', state, callback);
   }
 

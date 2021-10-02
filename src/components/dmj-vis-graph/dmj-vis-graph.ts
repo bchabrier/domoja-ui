@@ -11,8 +11,8 @@ import { DataSet } from 'vis-data/peer';
 //import { DataSet } from 'vis-data/dist/esm.js';
 
 import 'hammerjs'; // need to avoid error 'Hammer.assign is not a function'. See https://github.com/almende/vis/issues/3292
-//import { Timeline, TimelineOptions, TimelineGroup, TimelineItem } from 'vis-timeline';
-import { Timeline, TimelineOptions, TimelineGroup, TimelineItem } from 'vis-timeline/dist/vis-timeline-graph2d.esm.js';
+import { Timeline, TimelineOptions } from 'vis-timeline';
+//import { Timeline, TimelineOptions } from 'vis-timeline/dist/vis-timeline-graph2d.esm.js';
 
 
 
