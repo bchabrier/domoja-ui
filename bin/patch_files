@@ -8,49 +8,65 @@ usage ()
     exit 2
 }
 
-case "$1" in 
-    set)
-        echo -n Patching vis-network...
-        sed -i -e 's!^\(import .* from  *["'"'"']vis-network/peer["'"'"'].*\)!//\1!' \
-            -e 's!^//\(import .* from  *["'"'"']vis-network/dist/vis-network.js["'"'"'].*\)!\1!' \
-            -e 's!^\(import .* from  *["'"'"']vis-data/peer["'"'"'].*\)!//\1!' \
-            -e 's!^//\(import .* from  *["'"'"']vis-data/dist/esm.js["'"'"'].*\)!\1!' \
-            src/components/dmj-zwave-config/dmj-zwave-config.ts
-        echo
-        echo -n Recompiling intl-messageformat...
-        projdir=$(dirname "$0")/..
-        projdir=$(realpath "$projdir")
-        source="$projdir/node_modules/intl-messageformat/intl-messageformat.esm.js"
-        target="$projdir/src/recompiled/intl-messageformat.esm.js"
-        [  "$target" -nt "$source" ] || (
-            cd / # to have no tconfig.json
-            # use /usr/bin/tsc (not node_modules/typescript/bin/tsc) because too old to compile this file
-            /usr/bin/tsc --allowJS -outDir $(dirname "$target") $projdir/node_modules/intl-messageformat/intl-messageformat.esm.js
-        )
-        echo
-        echo -n Patching intl-messageformat...
-        sed -i -e 's!^\(import .* from  *["'"'"']intl-messageformat["'"'"'].*\)!//\1!' \
-            -e 's!^//\(import .* from  *["'"'"']../recompiled/intl-messageformat.esm.js["'"'"'].*\)!\1!' \
-            src/directives/dmj-widget-host.ts
-        echo
-        ;;
-    unset)
-        echo -n Unpatching vis-network...
-        sed -i -e 's!^//\(import .* from  *["'"'"']vis-network/peer["'"'"'].*\)!\1!' \
-            -e 's!^\(import .* from  *["'"'"']vis-network/dist/vis-network.js["'"'"'].*\)!//\1!' \
-            -e 's!^//\(import .* from  *["'"'"']vis-data/peer["'"'"'].*\)!\1!' \
-            -e 's!^\(import .* from  *["'"'"']vis-data/dist/esm.js["'"'"'].*\)!//\1!' \
-            src/components/dmj-zwave-config/dmj-zwave-config.ts
-        echo
-        echo -n Unpatching intl-messageformat...
-        sed -i -e 's!^//\(import .* from  *["'"'"']intl-messageformat["'"'"'].*\)!\1!' \
-            -e 's!^\(import .* from  *["'"'"']../recompiled/intl-messageformat.esm.js["'"'"'].*\)!//\1!' \
-            src/directives/dmj-widget-host.ts
-        echo
-        ;;
-    *)
-        usage
-        ;;
-esac
+projdir=$(dirname "$0")/..
+projdir=$(realpath "$projdir")
+
+patch () {
+    local mode="$1"
+    shift
+    sedstring="sed -i"
+    while [ ! -z $1 ]
+    do
+        local from
+        local to
+        case $mode in
+        set) 
+            from="$1"
+            to="$2"
+            echo "About to patch '$from'..."
+            ;;
+        unset)
+            from="$2"
+            to="$1"
+            echo "About to unpatch '$to'..."
+            ;;
+        *)
+            echo "Mode not supported: '$mode'!"
+        esac
+        
+        sedstring="$sedstring -e 's!^\(import \(.*\) from  *[\"'\"'\"']$from[\"'\"'\"'].*\)!//\\1!'"
+        sedstring="$sedstring -e 's!^//\(import \(.*\) from  *[\"'\"'\"']$to[\"'\"'\"'].*\)!\\1!'"
+        shift
+        shift
+    done
+
+    [ "$mode" = set ] && echo -n Patching...
+    [ "$mode" = unset ] && echo -n Unpatching...
+    for file in $(find $projdir/src -type f -name '*.ts' -print)
+    do
+        eval $sedstring $file
+        echo -n '.'
+    done
+    echo
+}
+
+if [ "$1" = set ]; then
+    echo -n Recompiling intl-messageformat...
+    source="$projdir/node_modules/intl-messageformat/intl-messageformat.esm.js"
+    target="$projdir/src/recompiled/intl-messageformat.esm.js"
+    [  "$target" -nt "$source" ] || (
+        cd / # to have no tconfig.json
+        # use /usr/bin/tsc (not node_modules/typescript/bin/tsc) because too old to compile this file
+        /usr/bin/tsc --allowJS -outDir $(dirname "$target") $projdir/node_modules/intl-messageformat/intl-messageformat.esm.js
+    )
+    echo
+fi
+
+patch $1 \
+        vis-network/peer vis-network/dist/vis-network.js \
+        vis-data/peer vis-data/dist/esm.js \
+        vis-timeline vis-timeline/dist/vis-timeline-graph2d.esm.js \
+        intl-messageformat ../recompiled/intl-messageformat.esm.js 
+        
 
 
