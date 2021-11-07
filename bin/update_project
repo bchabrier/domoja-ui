@@ -103,7 +103,7 @@ do
 done
 
 # update readme
-. ~/domoja/tools/update_readme -d
+. ~/domoja/tools/update_readme
 
 INIT
 
@@ -145,7 +145,7 @@ START widgetList
         echo '```'
         echo
     done
-) >$tmpreadme
+) >$_TMPREADME
 END
 
 CLEANUP
