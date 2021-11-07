@@ -14,7 +14,7 @@
     "ionic:serve": "node --max-old-space-size=300 node_modules/@ionic/app-scripts/bin/ionic-app-scripts.js serve --consolelogs",
     "ionic:build:before": "bin/update_project; bin/patch_files set;",
     "ionic:build": "node --max-old-space-size=3000 --memory-reducer node_modules/@ionic/app-scripts/bin/ionic-app-scripts.js build --prod --wwwDir ~/domoja/www",
-    "ionic:build:after": "bin/patch_files unset; sed -e 's!<title>Domoja.*</title>!<title>Domoja</title>!' < src/login.html > ~/domoja/www/login.html; sed -i -e 's!\\.DomojaURL=\"[^\"]*\"!.DomojaURL=window.location.origin!' ~/domoja/www/build/main.js; cp src/manifest-auth.json ~/domoja/www; cd ~/domoja/www/assets/favicon && rm -f *.zip readme.txt;"
+    "ionic:build:after": "bin/patch_files unset; sed -e 's!<title>Domoja.*</title>!<title>Domoja</title>!' < src/login.html > ~/domoja/www/login.html; cp src/manifest-auth.json ~/domoja/www; cd ~/domoja/www/assets/favicon && rm -f *.zip readme.txt;"
   },
   "config": {
     "ionic_watch": "./watch.config.js"

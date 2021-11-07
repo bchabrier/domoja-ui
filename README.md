@@ -204,7 +204,7 @@ Display a device state as a toggle. The value `ON` display the toggle switched o
 #### Example
 ```
 devices:
-  - pompes : { type: device, widget: toggle, tags: 'aquarium-page', source: ZStick, id: "14-37-2-currentValue", name: "Pompes aquarium" }
+  - pompes : { type: device, widget: toggle, tags: 'aquarium-page', source: ESPCommands, id: "3c6ed4:0", transform: "1=>OFF,0=>ON,OFF=>1,ON=>0", name: "Pompes aquarium" }
 ```
 
 ### Widget `vis-graph`
@@ -286,6 +286,10 @@ Simply make a copy of an existing `dmj-` widget directory.
 Define `ngOnInit()` to initialize the widget.
 
 ## Development
+
+# Modify domoja server url
+
+When running domoja-ui separately (in development mode), calls to the domoja API are proxied to the domoja server through the proxy configuration in `ionic.config.json`.
 
 # Add a new provider
 

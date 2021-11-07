@@ -1,5 +1,11 @@
 {
   "name": "DomojaUI",
   "integrations": {},
-  "type": "ionic-angular"
+  "type": "ionic-angular",
+  "proxies": [
+    {
+      "path": "/",
+      "proxyUrl": "https://domo.bchabrier.com/"
+    }
+  ]
 }
