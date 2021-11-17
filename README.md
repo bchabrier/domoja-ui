@@ -286,13 +286,11 @@ Simply make a copy of an existing `dmj-` widget directory.
 
 Define `ngOnInit()` to initialize the widget.
 
-## Development
-
-# Modify domoja server url
+## Modify domoja server url
 
 When running domoja-ui separately (in development mode), calls to the domoja API are proxied to the domoja server through the proxy configuration in `ionic.config.json`.
 
-# Add a new provider
+## Add a new provider
 
 ```
 $ ionic generate provider
