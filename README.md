@@ -236,7 +236,6 @@ devices:
   - config : { type: device, widget: "zwave-config", tags: 'zwave', source: ZStick, id: "1", attribute: "zwave_config", name: "ZWave config"} 
 ```
 
-
 [//]: # (widgetList END)
 
 # Development

@@ -198,8 +198,8 @@ export class DmjZwaveConfigComponent extends DmjWidgetComponent implements OnIni
 
   private sendControllerCommand(command: Object) {
     let msg = JSON.parse(this.device.state as string);
-    Object.assign(command, msg);
-    this.device.stateChange(this.device, JSON.stringify(command), err => {});
+    Object.assign(msg, command);
+    this.device.stateChange(this.device, JSON.stringify(msg), err => {});
   }
 
   setValueID(node: zwaveNode, valueID: ValueID) {
