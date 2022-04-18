@@ -15,4 +15,7 @@ dmj-vis-graph {
 	.vis-item .vis-item-overflow {
 		overflow: visible;
 	}
+	.vis-grid.vis-saturday, .vis-grid.vis-sunday {
+		background: lightgrey;
+	}
 }
