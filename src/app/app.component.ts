@@ -7,6 +7,7 @@ import { PageListProvider, componentPage } from '../providers/page-list/page-lis
 import { CameraUrlProvider } from '../providers/camera-url/camera-url'
 import { DomojaApiService } from '../providers/domoja-api/domoja-api';
 import { LoginPage } from '../pages/login/login';
+import { SafeStyle } from '@angular/platform-browser';
 
 import createPanZoom, { PanZoom } from 'panzoom';
 
@@ -20,6 +21,7 @@ export class MyApp {
   panzoom: PanZoom;
 
   fullscreenImageUrl = "";
+  fullscreenImageStyle: SafeStyle;
   fullscreenVisibleClass: 'hidden' | 'visible' = 'hidden';
 
   constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private pageList: PageListProvider, private api: DomojaApiService, private cameraUrlProvider: CameraUrlProvider) {
@@ -49,11 +51,12 @@ export class MyApp {
       }
     });
 
-    this.cameraUrlProvider.fullscreenImageUrlSubject.subscribe(url => {
-      if (!this.panzoom && url !== "") {
+    this.cameraUrlProvider.fullscreenImageUrlSubject.subscribe(urlStyle => {
+      if (!this.panzoom && urlStyle.url !== "") {
 
         this.fullscreenImageUrl = ''; // to make sure the previous image is cleared whatever happens with the new one
-        this.fullscreenImageUrl = url;
+        this.fullscreenImageUrl = urlStyle.url;
+        this.fullscreenImageStyle = urlStyle.style;
 
         const element = document.getElementById('fullscreen-img');
 
@@ -72,12 +75,13 @@ export class MyApp {
         });
 
         this.fullscreenVisibleClass = 'visible';
-      } else if (this.panzoom && url === "") {
+      } else if (this.panzoom && urlStyle.url === "") {
         this.fullscreenVisibleClass = 'hidden';
         this.panzoom.dispose();
         this.panzoom = null;
       } else if (this.panzoom) {
-        this.fullscreenImageUrl = url;
+        this.fullscreenImageUrl = urlStyle.url;
+        this.fullscreenImageStyle = urlStyle.style;
       }
     });
 

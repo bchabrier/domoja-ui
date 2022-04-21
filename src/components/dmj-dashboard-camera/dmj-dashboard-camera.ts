@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { DmjDashboardComponent } from '../dmj-dashboard-component';
 import { DomojaApiService, Device } from '../../providers/domoja-api/domoja-api'
 import { CameraUrlProvider } from '../../providers/camera-url/camera-url'
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 @Component({
   selector: 'dmj-dashboard-camera',
@@ -12,15 +12,18 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
   refreshInterval: number = 10000;
   camera: Device;
   cameraUrl: string;
+  @Input() url: string;
+  style: SafeStyle = undefined;
 
   constructor(private cameraUrlProvider: CameraUrlProvider, sanitizer: DomSanitizer) {
     super(sanitizer);
   }
 
   ngOnInit() {
+    super.ngOnInit();
     if (this.args.camera) {
       this.cameraUrl = `${DomojaApiService.DomojaURL}/devices/${this.args.camera}/snapshot`;
-      this.args.url = this.cameraUrlProvider.getTimedUrl(this.cameraUrl);
+      this.url = this.cameraUrlProvider.getTimedUrl(this.cameraUrl);
       // Safari, probably for optimization, does not trigger onload when the URL is static / cached.
       // Hence, we trigger it "manually"
       setTimeout(() => {
@@ -31,20 +34,28 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
   }
 
   updateUrl() {
-    if (!this.args.url) return;
-    this.args.url = this.cameraUrlProvider.getNewTimedUrl(this.cameraUrl);
+    if (this.style === undefined) {
+      const cameraDevice = this.devices.get(this.args.camera);
+      if (cameraDevice !== undefined) {
+        const cameraWidget = cameraDevice.widget;
+        const aspectRatio = cameraWidget && cameraWidget.split(':')[3] || '';
+        this.style = this.sanitizer.bypassSecurityTrustStyle(aspectRatio !== '' ? `width:100%;aspect-ratio:${aspectRatio};` : '');
+      }
+    }
+    if (!this.url) return;
+    this.url = this.cameraUrlProvider.getNewTimedUrl(this.cameraUrl);
   }
 
   onload() {
-    if (!this.args.url) return;
-    this.cameraUrlProvider.setAsLoadedTimedUrl(this.cameraUrl, this.args.url)
+    if (!this.url) return;
+    this.cameraUrlProvider.setAsLoadedTimedUrl(this.cameraUrl, this.url)
     setTimeout(() => {
       this.updateUrl();
     }, this.refreshInterval);
   }
 
   onerror() {
-    if (!this.args.url) return;
+    if (!this.url) return;
     setTimeout(() => {
       this.updateUrl();
     }, 5000);

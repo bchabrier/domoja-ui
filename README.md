@@ -22,6 +22,13 @@ devices:
 ### Widget `camera`
 Displays a camera.
 
+Supports several arguments:
+type:refreshInterval:aspectRatio
+
+- type is 'snapshot' or 'stream'
+- refreshInterval is in ms
+- aspectRatio is used to force an aspect ratio for the video/image (e.g. 16/9)
+
 #### Example
 ```
 devices:

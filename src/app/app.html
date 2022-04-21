@@ -20,5 +20,7 @@
 <ion-nav #content swipeBackEnabled="false"></ion-nav>
 <!-- Fullscreen image management -->
 <div id='fullscreen-div' class="image-modal {{fullscreenVisibleClass}}" (click)="closeModal()">
-    <img id='fullscreen-img' class="fullscreen-image" src="{{fullscreenImageUrl}}" />
+    <div id='fullscreen-img' class="fullscreen-image">
+        <img class="vertical-center" [style]="fullscreenImageStyle" src="{{fullscreenImageUrl}}" />
+    </div>
 </div>

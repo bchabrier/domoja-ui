@@ -1,4 +1,4 @@
 <div class="imgFrame">
     <ion-icon class="largeIcon" name="videocam"></ion-icon>
-    <img class="largeIcon" src="{{args.url}}" (load)="onload()" (error)="onerror()" />
+    <img class="largeIcon" src="{{url}}" [style]="style" (load)="onload()" (error)="onerror()" />
 </div>

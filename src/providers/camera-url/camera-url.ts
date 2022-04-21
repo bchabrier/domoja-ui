@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/Rx';
+import { SafeStyle } from '@angular/platform-browser';
 
 /*
   Generated class for the CameraUrlProvider provider.
@@ -14,7 +15,7 @@ export class CameraUrlProvider {
 
   // fullscreen image management
   fullscreenRequester: any;
-  fullscreenImageUrlSubject: BehaviorSubject<string> = new BehaviorSubject('');
+  fullscreenImageUrlSubject: BehaviorSubject<{ url: string, style: SafeStyle }> = new BehaviorSubject({ url: '', style: '' });
 
   constructor() {
     //console.log('Hello CameraUrlProvider Provider');
@@ -45,18 +46,18 @@ export class CameraUrlProvider {
     this.timedUrls[url] = timedUrl;
   }
 
-  setFullscreenImage(requester: any, url: string) {
+  setFullscreenImage(requester: any, url: string, style: SafeStyle) {
     this.fullscreenRequester = requester;
-    this.fullscreenImageUrlSubject.next(url);
+    this.fullscreenImageUrlSubject.next({ url, style });
   }
 
   clearFullscreenImage() {
     this.fullscreenRequester = null;
-    this.fullscreenImageUrlSubject.next('');
+    this.fullscreenImageUrlSubject.next({ url: '', style: '' });
   }
 
-  updateFullscreenImage(requester: any, url: string) {
-    if (this.fullscreenRequester === requester) this.fullscreenImageUrlSubject.next(url);
+  updateFullscreenImage(requester: any, url: string, style: SafeStyle) {
+    if (this.fullscreenRequester === requester) this.fullscreenImageUrlSubject.next({ url, style });
   }
 
 }
