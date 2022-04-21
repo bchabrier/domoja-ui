@@ -1,5 +1,7 @@
+bin/patch_files text eol=lf
+bin/update_project text eol=lf
+README.md text eol=lf
+*.sh text eol=lf
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
-*.sh text eol=lf
-bin/update_project text eol=lf
-bin/patch_files text eol=lf
+
