@@ -32,9 +32,9 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
   graph: Timeline;
   graph_data: {
     chartType: string,
-    items?: Object,
+    items?: { content: string, id: string, start: Date }[],
     options?: TimelineOptions,
-    groups?: Object,
+    groups?: { content: string, id: string }[],
     style?: string,
     refreshInterval?: Number,
   } //& { containerId: string }
