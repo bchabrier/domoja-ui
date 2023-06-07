@@ -217,9 +217,19 @@ devices:
 ```
 
 ### Widget `vis-graph`
-Display a graph described by the device state.
+Display a timeline graph described by the device state.
 
-The device state should be a string representing a google "ChartWrapper" object, with "ChartType", "dataTable" and "options" properties (see specs on https://developers.google.com/chart/interactive/docs/reference#google.visualization.drawchart).
+The timeline is implemented by vis-timeline. See https://visjs.github.io/vis-timeline/docs/timeline.
+
+The device state should be a string representing an object containing a field `items`, an optional field `groups`, and a field `options`.
+
+The field `items` is an array used to describe the data items as in https://visjs.github.io/vis-timeline/docs/timeline/#Items. 
+
+The field `groups` is an array used to describe the data groups as in https://visjs.github.io/vis-timeline/docs/timeline/#Groups. 
+
+The field `options` is an object used to describe timeline configuration as in https://visjs.github.io/vis-timeline/docs/timeline/#Configuration_Options.  
+It can contain an additional option `displayOnlyInRangeExcept` (string or array of strings), not listed in the vis-timeline documentation, which allows to hide the groups which do not span over the current timeline time range, except the specified group or array of groups.
+ 
 #### Example
 ```
 devices:

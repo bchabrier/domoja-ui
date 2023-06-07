@@ -2,20 +2,33 @@ dmj-vis-graph {
 	span {
 		background-color: orange;
 	}
+
 	.timeline {
 		//width: 300px;
 		//height: 300px;
 		font-size: small;
 	}
+
 	.vis-item-content {
 		font-size: x-small;
 	}
+
 	// define items as overflow by default.
 	// this can be overriden with style="overflow:hidden;"
 	.vis-item .vis-item-overflow {
 		overflow: visible;
 	}
-	.vis-grid.vis-saturday, .vis-grid.vis-sunday {
+
+	.vis-grid.vis-saturday,
+	.vis-grid.vis-sunday {
 		background: lightgrey;
+	}
+
+	.out-range {
+		display: none;
+	}
+
+	.in-range {
+		display: block;
 	}
 }
