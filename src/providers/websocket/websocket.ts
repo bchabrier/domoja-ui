@@ -29,7 +29,7 @@ export class WebsocketService {
         obs.next(new MessageEvent('reload'));
       });
       //this.socket.on('error', obs.error.bind(obs));
-      this.socket.on('error', err => { console.log('error', err, this) })
+      this.socket.on('error', err => { console.log('error', err, this); obs.next(new MessageEvent('error')); })
       //this.socket.on('close', obs.complete.bind(obs));
       this.socket.on('close', err => { console.log('close', err) })
       this.socket.on('reconnect', value => {

@@ -24,20 +24,26 @@ class connectionNotification {
     connectionNotification.connections.push({
       notif: this,
       timeout: setTimeout(() => {
-        this.api.notifyConnectionClosed(this);
+        this.api.notifyConnectionClosed(this, null);
       }, timeout)
     });
   }
-  close() {
+  /**
+   * 
+   * @returns false if notifyConnectionClosed was called (hence nbComms was decremented), true if nbComms must be decremented
+   */
+  close(): boolean {
     const thisIndex = connectionNotification.connections.findIndex(cn => cn.notif === this);
     if (thisIndex > -1) {
       const thisKept = connectionNotification.connections[thisIndex];
       clearTimeout(thisKept.timeout);
       connectionNotification.connections.splice(thisIndex, 1);
+      return true;
     } else {
       // connectionNotification already deleted, probably because the timeout occurred before
       // programmed close()
       //console.error('Warning, non existent connectionNotification. Did you call notifyConnectionStarted()?');
+      return false;
     }
   }
 };
@@ -101,6 +107,7 @@ export class DomojaApiService {
   private appObservable: BehaviorSubject<App> = new BehaviorSubject(this.app);
   private nbComms: number = 0;
   nbCommsSubject: BehaviorSubject<number> = new BehaviorSubject(this.nbComms);
+  inError: boolean = false; // if the connection to the server is in error
   private keptEvents: Array<message> = [];
   private authentifiedObservable: BehaviorSubject<boolean> = new BehaviorSubject(this.authentified);
 
@@ -113,6 +120,11 @@ export class DomojaApiService {
 
     // register to get the websocket updates
     this.events.subscribe((event: message) => {
+      if (event.type == 'error') {
+        const notify = this.notifyConnectionStarted();
+        this.notifyConnectionClosed(notify, false);
+        return;
+      }
       if (event.type == 'reload') {
         // force a reload
         return this.loadAll();
@@ -125,7 +137,7 @@ export class DomojaApiService {
       const notify = this.notifyConnectionStarted();
       this.applyEvent(event);
       this.devicesObservable.next(this.devices);
-      this.notifyConnectionClosed(notify);
+      this.notifyConnectionClosed(notify, true);
     });
 
     this.loadAll();
@@ -142,8 +154,9 @@ export class DomojaApiService {
   private loadFromAPI<thing>(path: string, observer: Subject<thing>, transform?: (ret: thing) => thing) {
     const notify = this.notifyConnectionStarted();
     this.http.get(`${DomojaApiService.DomojaURL}${path}`, { withCredentials: true }).pipe(
-      this.notifyConnectionClosedOperator(notify)
+      //this.notifyConnectionClosedOperator(notify)
     ).subscribe(res => {
+      this.notifyConnectionClosed(notify, true);
       if (this.authentified != true) {
         this.authentified = true;
         this.authentifiedObservable.next(true);
@@ -154,6 +167,7 @@ export class DomojaApiService {
       observer.next(tsf(ret));
     },
       err => {
+        this.notifyConnectionClosed(notify, false);
         if (err.status != 200) {
           if (err.status == 401) {
             if (this.authentified != false) {
@@ -203,19 +217,20 @@ export class DomojaApiService {
    */
   notifyConnectionStarted(): connectionNotification {
     this.nbComms++;
-    this.nbCommsSubject.next(this.nbComms);
+    this.nbCommsSubject.next(this.inError ? -1 : this.nbComms);
     return new connectionNotification(this);
   }
 
-  notifyConnectionClosed(notif: connectionNotification) {
-    notif.close();
-    this.nbComms--;
-    this.nbCommsSubject.next(this.nbComms);
+  notifyConnectionClosed(notif: connectionNotification, success: boolean | null) {
+    if (success !== null) this.inError = !success;
+    if (notif.close())
+      this.nbComms--;
+    this.nbCommsSubject.next(this.inError ? -1 : this.nbComms);
   }
 
   notifyConnectionClosedOperator(notif: connectionNotification) {
     const notify = () => {
-      this.notifyConnectionClosed(notif);
+      //this.notifyConnectionClosed(notif);
     }
     return tap(notify, notify);
   }
@@ -240,13 +255,15 @@ export class DomojaApiService {
         responseType: 'text'
       }).pipe(
         this.checkAuthentifiedOperator(),
-        this.notifyConnectionClosedOperator(notif),
+        //this.notifyConnectionClosedOperator(notif),
       ).subscribe(
         res => {
           console.log('POST done')
+          this.notifyConnectionClosed(notif, true);
           callback(null);
         },
         err => {
+          this.notifyConnectionClosed(notif, false);
           let errmsg = `${err.status} - ${err.statusText}`;
           console.error("Error in setValues:", errmsg);
           callback(err);
@@ -286,6 +303,7 @@ export class DomojaApiService {
   getDevicesFromAPI(): Observable<Array<Device>> {
     const notif = this.notifyConnectionStarted()
       ; return this.http.get(`${DomojaApiService.DomojaURL}/devices`, { withCredentials: true }).catch((err, caught) => {
+        this.inError = true;
         return of([]);
       }).map(res => {
         console.log('done real API call');
@@ -299,7 +317,7 @@ export class DomojaApiService {
           element.UpdateDate = new Date(element.UpdateDate ? element.UpdateDate : null);
           ret[element.path] = element;
         });
-        this.notifyConnectionClosed(notif);
+        this.notifyConnectionClosed(notif, null);
         return ret;
       });
   }

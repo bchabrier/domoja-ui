@@ -133,9 +133,9 @@ export class DmjTempGraph extends DmjWidgetComponent implements OnInit, OnDestro
     const notif = this.api.notifyConnectionStarted();
     let http_subscription = this.http.get(`${DomojaApiService.DomojaURL}/devices/${this.sensor.path}/history?from=${pastFrom.toJSON()}&to=${config.to.toJSON()}&aggregate=${config.aggregate}`, { withCredentials: true }).pipe(
       this.api.checkAuthentifiedOperator(),
-      this.api.notifyConnectionClosedOperator(notif)
     ).subscribe(
       (res: { date: string, value: number }[]) => {
+        this.api.notifyConnectionClosed(notif, true);
 
         let rawres = res.map(r => { return { date: new Date(r.date), value: r.value } });
 
@@ -199,6 +199,9 @@ export class DmjTempGraph extends DmjWidgetComponent implements OnInit, OnDestro
           this.loading = false;
         }
 
+      }, err => {
+        this.api.notifyConnectionClosed(notif, false);
+        console.log("Error while retrieving history", err);
       });
   }
 
