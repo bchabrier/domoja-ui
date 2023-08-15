@@ -105,6 +105,7 @@ export class DomojaApiService {
   private devicesObservable: BehaviorSubject<Array<Device>> = new BehaviorSubject(this.devices);
   private pagesObservable: BehaviorSubject<Array<Page>> = new BehaviorSubject(this.pages);
   private appObservable: BehaviorSubject<App> = new BehaviorSubject(this.app);
+  private deviceObservables: Map<string, BehaviorSubject<Device>> = new Map();
   private nbComms: number = 0;
   nbCommsSubject: BehaviorSubject<number> = new BehaviorSubject(this.nbComms);
   inError: boolean = false; // if the connection to the server is in error
@@ -280,6 +281,7 @@ export class DomojaApiService {
       if (this.devicesByPath[event.id].UpdateDate < eventDate) {
         this.devicesByPath[event.id].state = isDate(event.newValue) ? new Date(event.newValue) : event.newValue
         this.devicesByPath[event.id].UpdateDate = eventDate;
+        this.deviceObservables[event.id].next(this.devicesByPath[event.id]);
       }
     }
   }
@@ -292,6 +294,7 @@ export class DomojaApiService {
         this.devicesByPath[d.path] = d;
         d.stateChange = deviceStateChange;
         d.api = this;
+        if (!this.deviceObservables[d.path]) this.deviceObservables[d.path] = new BehaviorSubject(d);
       })
       // apply kept events if any
       this.keptEvents.forEach(ev => this.applyEvent(ev));
@@ -328,6 +331,14 @@ export class DomojaApiService {
 
   getCurrentDevices(): Device[] {
     return this.devices;
+  }
+
+  getDevice(id: string): Observable<Device> {
+    return this.deviceObservables[id];
+  }
+
+  getCurrentDevice(id: string): Device {
+    return this.devicesByPath[id];
   }
 
   setDeviceState(device: Device, state: string, callback: (err: Error) => void) {

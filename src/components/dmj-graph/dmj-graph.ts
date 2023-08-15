@@ -29,7 +29,7 @@ export class DmjGraph extends DmjWidgetComponent implements OnInit, OnDestroy {
     refreshInterval?: Number,
     view?: Object | Array<Object>,
   } //& { containerId: string }
-  devices_subscription: Subscription;
+  device_subscription: Subscription;
 
   constructor(public api: DomojaApiService, private sanitizer: DomSanitizer) {
     super(null);
@@ -37,14 +37,14 @@ export class DmjGraph extends DmjWidgetComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     super.ngOnInit();
-    this.devices_subscription = this.api.getDevices().subscribe(devices => {
+    this.device_subscription = this.api.getDevice(this.device.id).subscribe(device => {
       this.container = '_graph_' + this.device.path;
       this.updateChart();
     });
   }
 
   ngOnDestroy() {
-    this.devices_subscription.unsubscribe();
+    this.device_subscription.unsubscribe();
     super.ngOnDestroy();
   }
 
