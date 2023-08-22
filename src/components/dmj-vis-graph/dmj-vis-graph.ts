@@ -53,11 +53,16 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
     groups?: GroupData[],
     style?: string,
     refreshInterval?: Number,
+    itemsDeviceList?: string[],
   } //& { containerId: string }
-  devices_subscription: Subscription;
+  device_subscription: Subscription;
+  itemDevices_subscriptions: Subscription[] = [];
   @ViewChild('visGraph') containerElement: ElementRef;
   start: any;
   end: any;
+  previousAllItems = new DataSet<ItemData>(); // to check if setItems is needed
+  openItems: string[] = [];
+  items: DataSet<ItemData> = new DataSet();
 
   constructor(public api: DomojaApiService, private sanitizer: DomSanitizer) {
     super(null);
@@ -68,15 +73,76 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
   }
 
   ngAfterViewInit(): void {
-    this.devices_subscription = this.api.getDevices().subscribe(devices => {
+    this.device_subscription = this.api.getDevice(this.device.id).subscribe(device => {
       this.updateChart();
     });
     this.updateChart();
+
+    if (this.graph_data && this.graph_data.itemsDeviceList) {
+      this.graph_data.itemsDeviceList.forEach(id => {
+        console.log('device changed', id)
+        if (id !== 'alarme.sensorsStatesRecentChanges') return;
+        console.log('device changed kept', id)
+        const deviceObservable = this.api.getDevice(id);
+        if (deviceObservable)
+          this.itemDevices_subscriptions.push(deviceObservable.subscribe(device => {
+            console.log('device has changed', device.path)
+            this.updateItemsFromDevices();
+          }))
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.devices_subscription && this.devices_subscription.unsubscribe();
+    this.graph && this.graph.destroy();
+    this.graph = null;
+    this.device_subscription && this.device_subscription.unsubscribe();
+    this.itemDevices_subscriptions.forEach(s => s.unsubscribe());
+    this.itemDevices_subscriptions = [];
     super.ngOnDestroy();
+  }
+
+  updateItemsFromDevices() {
+    let allItems: DataSet<ItemData> = new DataSet();
+    if (this.graph_data.itemsDeviceList) this.graph_data.itemsDeviceList.forEach(d => {
+      const device = this.api.getCurrentDevice(d);
+      if (!device) console.error(`In dmj-vis-graph: device "${d}" not found!`);
+      else {
+        let items: ItemData[] = [];
+        try {
+          items = JSON.parse(device.state as string);
+        } catch (e) {
+          console.error(e);
+        }
+        if (!Array.isArray(items) || (items.length > 0 && !items[0].start && !items[0].end)) {
+          console.error(`Device "${device.path}" does not contain data for vis-timeline (should be [{start?, end?, content ...}]):`, (device.state as string).substring(0, 100));
+        } else {
+          allItems.update(items);
+        }
+      }
+    });
+    if (this.previousAllItems.length !== allItems.length || JSON.stringify(this.previousAllItems.get()) !== JSON.stringify(allItems.get())) {
+      console.log('using setTimeout to setItems');
+      this.previousAllItems = allItems;
+
+      // we delay slightly the setItems in order to let Angular the time to display the page 
+      setTimeout(() => {
+        if (!this.graph) return;
+        //this.graph.setItems(new DataSet(allItems.get().slice(allItems.length - 2000)));
+        console.log('before setItems', allItems.length)
+        this.openItems = (allItems.get() as ItemData[]).filter(i => !i.end).map(i => i.id);
+        this.items = allItems;
+        this.updateOpenItems();
+        // setItems is the most efficient (performant) way to update the timeline
+        this.graph.setItems(this.items);
+        console.log('after setItems')
+      }, 500);
+    }
+  }
+
+  updateOpenItems() {
+    const now = (new Date()).toISOString();
+    this.items.update(this.openItems.map(i => ({ id: i, end: now })));
   }
 
   filterGroupsInRange(properties?: any) {
@@ -115,7 +181,7 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
       return;
     }
     let state = JSON.parse(this.device.state);
-    if (typeof state != 'object' || !state.items) {
+    if (typeof state != 'object' || !(state.items || state.itemsDeviceList)) {
       error();
       return;
     }
@@ -134,6 +200,8 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
       if (!this.graph && containerElement) {
         this.graph = new Timeline(containerElement, null);
 
+        this.graph.on('currentTimeTick', () => this.updateOpenItems());
+
         if (this.graph_data.options && this.graph_data.options.displayOnlyInRangeExcept) {
           if (typeof this.graph_data.options.displayOnlyInRangeExcept === 'string') {
             this.displayOnlyInRangeExcept = [this.graph_data.options.displayOnlyInRangeExcept];
@@ -142,10 +210,12 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
           } else {
             console.warn('dmj-vis-graph: option "displayOnlyInRangeExcept" must be a string or an array of strings specifying the groups that must be always visible.');
           }
-          this.graph.on("rangechange", this.filterGroupsInRange.bind(this));
+          if (this.displayOnlyInRangeExcept) this.graph.on("rangechange", this.filterGroupsInRange.bind(this));
         }
         //this.graph.on("rangechanged", this.rangeChanged.bind(this));
         //this.graph.on("_change", this.rangeChanged.bind(this));
+
+        if (this.graph_data.itemsDeviceList) this.updateItemsFromDevices();
       }
 
       if (this.graph) {
@@ -172,8 +242,13 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
           this.graph.setGroups(new DataSet(this.graph_data.groups));
         }
 
-        this.graph.setItems(new DataSet(this.graph_data.items));
-        this.filterGroupsInRange();
+        if (this.graph_data.items) {
+          this.items = new DataSet(this.graph_data.items);
+          this.updateOpenItems();
+          this.graph.setItems(this.items);
+        }
+
+        if (this.displayOnlyInRangeExcept) this.filterGroupsInRange();
 
       } else setTimeout(drawChart, 0);
 
