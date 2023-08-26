@@ -99,6 +99,25 @@ devices:
   - text-to-say : { type: variable, widget: "input", tags: 'voix', name: "Message à dire"} 
 ```
 
+### Widget `link`
+Displays the device state as a link. 
+Additional arguments can be added, separated by a character separator not used in the arguments.
+
+The supported arguments are: 
+- <page>: the page to which the link points
+- <visibility>: "hidden" or "visible" (default)
+
+Examples:
+- `"link:temperature:visible"`  
+
+Note that the state of the device is never shown. A typical use is:
+`devices:`
+`- more-info : { type: device, widget: link:more-info:visible, source: demo, id: whatever, name: "More info"}`
+#### Example
+```
+devices:
+```
+
 ### Widget `multistate`
 This widget is used to display a state with multiple values. Each state value is represented with a button. 
 When clicked, the device state changes to the label of the clicked button.
