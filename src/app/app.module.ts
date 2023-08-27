@@ -115,6 +115,56 @@ DmjZwaveConfigComponent,
 })
 export class AppModule { }
 
+if (console.log.name !== 'log') {
+  // console.log has been overwritten, we are probably in Angular Dev mode, and console.log also redirects messages to the server
+  // where objects are displayed as [object Object]
+  // Hence, we redefine console.log to compensate for this
+
+  // Angular console.log make a call to JSON.stringify inside drainMessageQueue. We overwrite JSON.stringiy to detect
+  // this situation and replace the object by inspect(object)
+
+  const origJSONStringify = JSON.stringify;
+
+  const fakeJSONStringify = function (): string {
+
+    // Error
+    //   at JSON.fakeJSONStringify (app.module.ts:132:14)
+    //   at Object.drainMessageQueue (ion-dev.js?v=3.2.1:139:33)
+    //   at Object.queueMessageSend (ion-dev.js?v=3.2.1:131:10)
+    //   at console.<anonymous> (ion-dev.js?v=3.2.1:167:18)
+    //   at webpackJsonp.413.console.log (app.module.ts:159:21)
+    //   at webpackJsonp.21.DomojaApiService.applyEvent (domoja-api.ts:277:13)
+    //   at SafeSubscriber._next (domoja-api.ts:139:12)
+    //   at SafeSubscriber.__tryOrUnsub (Subscriber.js:242:1)
+    //   at SafeSubscriber.next (Subscriber.js:189:1)
+    //   at Subscriber._next (Subscriber.js:129:1)
+    const s = (new Error()).stack;
+
+    if (s.split('\n')[2].match(/at Object.drainMessageQueue/)) {
+      const msg = arguments[0];
+      if (msg && msg.category && msg.type && msg.data) {
+        const MAX = 256;
+        for (let i = 0; i < msg.data.length; i++) {
+          if (typeof msg.data[i] === 'object') {
+            // deactivate the patch during recursive inspection
+            JSON.stringify = origJSONStringify;
+            const dataAsString = inspect(msg.data[i]);
+            JSON.stringify = fakeJSONStringify;
+
+            if (dataAsString.length <= MAX) msg.data[i] = dataAsString;
+            else msg.data[i] = dataAsString.substring(0, MAX / 2) + ' ... ' + dataAsString.substring(dataAsString.length - MAX / 2);
+          }
+        }
+        return origJSONStringify(msg);
+      }
+    }
+    return origJSONStringify.apply(JSON, arguments);
+  };
+
+  JSON.stringify = fakeJSONStringify;
+
+}
+
 if (/iPhone/.test(navigator.userAgent)) {
 
   var orig_consolelog = console.log;
