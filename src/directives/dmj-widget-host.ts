@@ -33,28 +33,42 @@ function applyFormat(format: string, value: string | Date) {
   if (index >= 0) {
     // util.format style
 
-    let valueAsJSON: any;
-    try {
-      valueAsJSON = JSON.parse(value as string);
-    } catch (e) { }
-
     let formatArgs = [];
     while (index >= 0) {
-      switch (format.substr(index, 2)) {
+      switch (format.substring(index, 2)) {
         case '%s':
         case '%d':
           formatArgs.push(value);
           break;
         case '%j':
         default:
+          let valueAsJSON: any;
+          try {
+            valueAsJSON = JSON.parse(value as string);
+          } catch (e) { }
           format = format.substr(0, index) + '%s' + format.substr(index + 2); // otherwise will display "<json_string>" with ""
           formatArgs.push(valueAsJSON ? util.inspect(valueAsJSON).replaceAll('\n', '<br/>').replaceAll(/ /g, '&nbsp;') : value);
           break;
       }
-      const i = format.substr(index + 2).search(expr);
+      const i = format.substring(index + 2).search(expr);
       index = i >= 0 ? index + i + 2 : -1;
     }
     string = util.format(format, ...formatArgs);
+  } else if (format.match(/^compact[0-9][0-9]+$/)) {
+    // compact-<number>
+    const n = parseInt(format.substring(7));
+
+    const str = value.toString();
+    if (str.length <= n) {
+      string = str;
+    } else if (n <= 3) {
+      string = str.substring(0, 3);
+    } else if (n === 4) {
+      string = str[0] + '...';
+    } else {
+      const midLength = Math.floor((n - 3) / 2);
+      string = str.substring(0, midLength) + '...' + str.substring(str.length - midLength);
+    }
   } else {
     // intl-messageformat style
     try {

@@ -13,18 +13,20 @@ import { formatString } from '../../directives/dmj-widget-host';
  * - `%j`: display as JSON object
  * - `%s`: display as string
  * - `%d`: display as Number
+ * - compact<n>: display as a compacted string <start>...<end> limited to n characters
  * 
  * Examples:
  * - `"text"` to display the value without interpreting the HTML tags 
  * - `"text:%s"` to display the value while interpreting the HTML tags 
  * - `"text:Temp is <b>{value, number}</b> °C"` to format a number in an HTML string
- * - `"text:Part is {value, number, ::percent}"` to format a number as a percentage
- * - `"text:Amount is <b>{value, number, ::sign-always compact-short currency/GBP}</b>"` to format a number with a currency
- * - `"text:Temp is {value, number, :: .00 } °C"` to format a number with 2 fraction digit
- * - `"text:Temp is {value, number, :: .0# } °C"` to format a number with at least 1 fraction digit
- * - `"text:Temp is {value, number, :: percent .00 } °C"` to format a number as a percentage with 2 fraction digit
+ * - `"text/Part is {value, number, ::percent}"` to format a number as a percentage
+ * - `"text/Amount is <b>{value, number, ::sign-always compact-short currency/GBP}</b>"` to format a number with a currency
+ * - `"text/Temp is {value, number, :: .00 } °C"` to format a number with 2 fraction digit
+ * - `"text/Temp is {value, number, :: .0# } °C"` to format a number with at least 1 fraction digit
+ * - `"text/Temp is {value, number, :: percent .00 } °C"` to format a number as a percentage with 2 fraction digit
  * - `"text/JSON is: %j"` to format a value as a JSON
  * - `"text: value = %d"` to format a value as a number
+ * - `"text:compact256"` to format a string to 256 chars max
  * 
  */
 @Component({
