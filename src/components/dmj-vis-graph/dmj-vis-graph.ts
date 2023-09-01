@@ -15,6 +15,17 @@ import { Timeline, TimelineOptions } from 'vis-timeline';
 //import { Timeline, TimelineOptions } from 'vis-timeline/dist/vis-timeline-graph2d.esm.js';
 
 
+const debug = false;
+
+let start; let end;
+
+function changedOrAddedItems(newItems: ItemData[], initialItems: DataSet<ItemData>): ItemData[] {
+  return newItems.filter(i => {
+    const alreadyHereItem = initialItems.get(i.id);
+    return !alreadyHereItem || alreadyHereItem.start !== i.start || alreadyHereItem.end !== i.end;
+  });
+}
+
 type ItemData = { content: string, id: string, start: string, end: string, group: string };
 type GroupData = { content: string, id: string, className: string };
 
@@ -60,9 +71,11 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
   @ViewChild('visGraph') containerElement: ElementRef;
   start: any;
   end: any;
-  previousAllItems = new DataSet<ItemData>(); // to check if setItems is needed
   openItems: string[] = [];
-  items: DataSet<ItemData> = new DataSet();
+  allItems = new DataSet<ItemData>(); // all items to be displayed. It could contain "open" items, i.e. items with no end defined
+  items: DataSet<ItemData> = new DataSet(); // used by the graph. The end of open items is updated with the current date
+  changeQueue: ItemData[][] = [];
+  viewChecked: boolean = false;
 
   constructor(public api: DomojaApiService, private sanitizer: DomSanitizer) {
     super(null);
@@ -73,6 +86,7 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
   }
 
   ngAfterViewInit(): void {
+    debug && console.log('in ngAfterViewInit');
     this.device_subscription = this.api.getDevice(this.device.id).subscribe(device => {
       this.updateChart();
     });
@@ -80,17 +94,18 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
 
     if (this.graph_data && this.graph_data.itemsDeviceList) {
       this.graph_data.itemsDeviceList.forEach(id => {
-        console.log('device changed', id)
+        debug && console.log('device changed', id)
         if (id !== 'alarme.sensorsStatesRecentChanges') return;
-        console.log('device changed kept', id)
+        debug && console.log('device changed kept', id)
         const deviceObservable = this.api.getDevice(id);
         if (deviceObservable)
           this.itemDevices_subscriptions.push(deviceObservable.subscribe(device => {
-            console.log('device has changed', device.path)
+            debug && console.log('device has changed', device.path)
             this.updateItemsFromDevices();
           }))
       });
     }
+    this.viewChecked = false;
   }
 
   ngOnDestroy() {
@@ -99,56 +114,172 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
     this.device_subscription && this.device_subscription.unsubscribe();
     this.itemDevices_subscriptions.forEach(s => s.unsubscribe());
     this.itemDevices_subscriptions = [];
+    this.changeQueue = [];
     super.ngOnDestroy();
   }
 
-  updateItemsFromDevices() {
-    let allItems: DataSet<ItemData> = new DataSet();
-    if (this.graph_data.itemsDeviceList) this.graph_data.itemsDeviceList.forEach(d => {
-      const device = this.api.getCurrentDevice(d);
-      if (!device) console.error(`In dmj-vis-graph: device "${d}" not found!`);
-      else {
-        let items: ItemData[] = [];
-        try {
-          items = JSON.parse(device.state as string);
-        } catch (e) {
-          console.error(e);
-        }
-        if (!Array.isArray(items) || (items.length > 0 && !items[0].start && !items[0].end)) {
-          console.error(`Device "${device.path}" does not contain data for vis-timeline (should be [{start?, end?, content ...}]):`, (device.state as string).substring(0, 100));
-        } else {
-          allItems.update(items);
-        }
-      }
-    });
-    if (this.previousAllItems.length !== allItems.length || JSON.stringify(this.previousAllItems.get()) !== JSON.stringify(allItems.get())) {
-      console.log('using setTimeout to setItems');
-      this.previousAllItems = allItems;
+  ngAfterViewChecked() {
 
-      // we delay slightly the setItems in order to let Angular the time to display the page 
-      setTimeout(() => {
-        if (!this.graph) return;
-        //this.graph.setItems(new DataSet(allItems.get().slice(allItems.length - 2000)));
-        console.log('before setItems', allItems.length)
-        this.openItems = (allItems.get() as ItemData[]).filter(i => !i.end).map(i => i.id);
-        this.items = allItems;
-        this.updateOpenItems();
-        // setItems is the most efficient (performant) way to update the timeline
-        this.graph.setItems(this.items);
-        console.log('after setItems')
-      }, 500);
+    if (!this.viewChecked) {
+      debug && console.log('in ngAfterViewChecked');
+      this.viewChecked = true;
+      this.drainChangeQueue();
+    }
+
+  }
+
+
+  updateItemsFromDevices() {
+    start = Date.now();
+    const allItems = new DataSet(this.allItems.get());
+    end = Date.now();
+    debug && console.log('allItems created', `${end - start} ms,`, `${allItems.length} elements`);
+
+    if (this.graph_data.itemsDeviceList) this.graph_data.itemsDeviceList.forEach(d => {
+
+      const device = this.api.getCurrentDevice(d);
+
+      if (!device) console.error(`In dmj-vis-graph: device "${d}" not found!`);
+
+      debug && console.log(`updateItemsFromDevice ${d}...`)
+
+      let items: ItemData[] = [];
+      try {
+        items = JSON.parse(device.state as string);
+      } catch (e) {
+        console.error(e);
+      }
+      if (!Array.isArray(items) || (items.length > 0 && !items[0].start && !items[0].end)) {
+        console.error(`Device "${device.path}" does not contain data for vis-timeline (should be [{start?, end?, content ...}]):`, (device.state as string).substring(0, 100));
+        return;
+      }
+
+      start = Date.now();
+      const itemsSet: DataSet<ItemData> = new DataSet(items);
+      end = Date.now();
+      debug && console.log('itemsSet created', `${end - start} ms,`, `${itemsSet.length} elements`);
+
+
+      start = Date.now();
+      allItems.update(items);
+      end = Date.now();
+      debug && console.log('allItems updated', `${end - start} ms,`, `${itemsSet.length} elements`);
+    });
+
+    start = Date.now();
+    debug && console.log(`Calculating diff between allItems (${allItems.length} elements) and this.allItems (${this.allItems.length} elements)`)
+    const newItems = changedOrAddedItems(allItems.get(), this.allItems);
+    end = Date.now();
+    debug && console.log(`diff duration`, `${end - start} ms, found ${newItems.length} elements`)
+
+    if (newItems.length) {
+
+      this.allItems = allItems;
+
+      const inWindowItems = newItems.filter(i => !i.start || !i.end || !(new Date(i.start) > this.graph.getWindow().end || new Date(i.end) < this.graph.getWindow().start));
+      debug && console.log(`${inWindowItems.length} elements in window`);
+      this.queueChanges(inWindowItems);
+
+      const outWindowItems = newItems.filter(i => !(!i.start || !i.end || !(new Date(i.start) > this.graph.getWindow().end || new Date(i.end) < this.graph.getWindow().start)));
+      debug && console.log(`${outWindowItems.length} elements out of window`);
+      this.queueChanges(outWindowItems);
+
+    }
+
+
+  }
+
+
+  queueChanges(change: ItemData[]) {
+    debug && console.log(`in queueChange, queuing change of ${change.length} elements, queue has now ${this.changeQueue.length + 1} changes`)
+    this.changeQueue.push(change);
+
+    if (this.viewChecked) this.drainChangeQueue();
+
+  }
+
+  doDrain(newItems: ItemData[]) {
+    debug && console.log(`updating ${newItems.length} items in this.items (${this.items.length})`)
+    start = Date.now();
+    this.updateGraphItems(newItems);
+    end = Date.now();
+    debug && console.log(`done`, `${end - start} ms`);
+
+    if (this.changeQueue.length > 0) setTimeout(() => this.drainChangeQueue());
+  }
+
+  drainChangeQueue() {
+    debug && console.log('in drainChangeQueue:', `${this.changeQueue.length} elements`);
+
+    const newItems = this.changeQueue.shift();
+
+    const MAX_CHUNKSIZE = 2000;
+
+    if (newItems) {
+      debug && console.log(`Requested drain of ${newItems.length} changes`);
+      if (newItems.length > MAX_CHUNKSIZE) {
+        // the graph updates are slow if the chunks are big and visible.
+        // Hence, we start with small chunks (when they are probably visible) during startupTimes times
+        // and then, when the items are old and probably not visible, we increase the 
+        // size of the chunks (x2 exponentially)
+        const startupChunkSize = 100;
+        let chunkSize = MAX_CHUNKSIZE;
+        let startupTimes = 0;
+        if (this.items.length === 0) {
+          chunkSize = startupChunkSize;
+          startupTimes = 5;
+        }
+        let i = 1;
+        const firstChunkSize = Math.min(chunkSize, newItems.length);
+        let sent = chunkSize;
+        const chunks: ItemData[][] = [];
+        while (sent < newItems.length) {
+          const chunk = newItems.slice(newItems.length - sent - chunkSize, newItems.length - sent)
+          chunks.push(chunk);
+          debug && console.log(`preparing chunk size = ${chunk.length}, ${newItems.length - sent - chunkSize}-${newItems.length - sent}`);
+          sent = Math.min(sent + chunkSize, newItems.length);
+          i++;
+          if (i > startupTimes) {
+            chunkSize = Math.min(2 * chunkSize, MAX_CHUNKSIZE);
+          }
+        }
+        this.changeQueue.unshift(...chunks);
+        debug && console.log(`draining first chunk size = ${firstChunkSize}`);
+        this.doDrain(newItems.slice(newItems.length - firstChunkSize, newItems.length));
+      } else {
+        this.doDrain(newItems);
+      }
     }
   }
 
-  updateOpenItems() {
-    const now = (new Date()).toISOString();
-    this.items.update(this.openItems.map(i => ({ id: i, end: now })));
+  updateGraphItems(items: ItemData[]) {
+    if (!this.graph) return; // graph has been destroyed
+
+    if (Object.keys(this.graph['itemSet'].items).length === 0) {
+      this.items.update(items);
+      this.graph.setItems(this.items);
+    } else {
+      this.items.update(items);
+    }
+    this.openItems = this.allItems.get().filter(i => !i.end).map(i => i.id);
+    this.updateOnlyOpenItems();
+
+    if (this.displayOnlyInRangeExcept) this.filterGroupsInRange();
+  }
+
+  updateOnlyOpenItems() {
+
+    if (this.openItems.length > 0) {
+      debug && console.log(`updating ${this.openItems.length} open items`);
+      const now = (new Date()).toISOString();
+      this.items.update(this.openItems.filter(i => this.items.get(i)).map(i => ({ id: i, end: now })));
+    }
   }
 
   filterGroupsInRange(properties?: any) {
     // find visible groups
 
-    const groups = (this.graph as any).itemSet.groups;
+    const groups = this.graph['itemSet'].groups;
 
     const start: Date = properties ? properties.start : new Date(this.graph["range"].start);
     const end: Date = properties ? properties.end : new Date(this.graph["range"].end);
@@ -200,7 +331,13 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
       if (!this.graph && containerElement) {
         this.graph = new Timeline(containerElement, null);
 
-        this.graph.on('currentTimeTick', () => this.updateOpenItems());
+        this.graph.on('currentTimeTick', () => this.updateOnlyOpenItems());
+
+        this.graph.on('changed', () => {
+          if (!this.graph) return; // graph has been destroyed
+
+          debug && console.log(`graph has changed, has now ${Object.keys(this.graph['itemSet'].items).length} items`);
+        });
 
         if (this.graph_data.options && this.graph_data.options.displayOnlyInRangeExcept) {
           if (typeof this.graph_data.options.displayOnlyInRangeExcept === 'string') {
@@ -215,7 +352,9 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
         //this.graph.on("rangechanged", this.rangeChanged.bind(this));
         //this.graph.on("_change", this.rangeChanged.bind(this));
 
-        if (this.graph_data.itemsDeviceList) this.updateItemsFromDevices();
+        if (this.graph_data.itemsDeviceList) {
+          this.updateItemsFromDevices();
+        }
       }
 
       if (this.graph) {
@@ -232,7 +371,7 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
         }
 
         if (this.graph_data.groups) {
-          const groups = (this.graph as any).itemSet.groups;
+          const groups = this.graph['itemSet'].groups;
 
           this.graph_data.groups.forEach(g => {
             const group = groups[g.id];
@@ -243,12 +382,18 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
         }
 
         if (this.graph_data.items) {
-          this.items = new DataSet(this.graph_data.items);
-          this.updateOpenItems();
-          this.graph.setItems(this.items);
-        }
 
-        if (this.displayOnlyInRangeExcept) this.filterGroupsInRange();
+          this.allItems = new DataSet<ItemData>(this.graph_data.items);
+
+          const inWindowItems = this.graph_data.items.filter(i => !i.start || !i.end || !(new Date(i.start) > this.graph.getWindow().end || new Date(i.end) < this.graph.getWindow().start))
+          debug && console.log(`${inWindowItems.length} elements in window`)
+          this.queueChanges(inWindowItems);
+
+          const outWindowItems = this.graph_data.items.filter(i => !(!i.start || !i.end || !(new Date(i.start) > this.graph.getWindow().end || new Date(i.end) < this.graph.getWindow().start)))
+          debug && console.log(`${outWindowItems.length} elements out of window`);
+          this.queueChanges(outWindowItems);
+
+        }
 
       } else setTimeout(drawChart, 0);
 
