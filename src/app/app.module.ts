@@ -169,7 +169,9 @@ if (console.log.name !== 'log') {
 
 }
 
-if (/iPhone/.test(navigator.userAgent)) {
+if (/iPhone/.test(navigator.userAgent) && window.location.origin !== 'https://domo.bchabrier.com') {
+
+  alert('iphone detected, logging activated!');
 
   var orig_consolelog = console.log;
 
@@ -183,12 +185,14 @@ if (/iPhone/.test(navigator.userAgent)) {
       if (unsentMsgs !== '') {
         sending = true;
 
-        var sendingMsgs = unsentMsgs;
-        unsentMsgs = '';
+        const LMAX = 65535; // 32768 OK
+
+        var sendingMsgs = unsentMsgs.substring(0, LMAX);
+        unsentMsgs = unsentMsgs.substring(LMAX);
 
         var xhttp = new XMLHttpRequest();
 
-        xhttp.open('GET', 'https://domo.bchabrier.com/serial?msg=' + sendingMsgs, true);
+        xhttp.open('POST', window.location.origin + '/serial', true);
 
         xhttp.onerror = function (e) {
           if (!(e instanceof ProgressEvent)) {
@@ -199,15 +203,26 @@ if (/iPhone/.test(navigator.userAgent)) {
         };
         xhttp.onreadystatechange = function (e) {
           if (xhttp.readyState === 4) {
-            if (xhttp.status === 200) {
-              sending = false;
-            } else {
-              //alert('readystate=4, status=' + xhttp.status + '(' + xhttp.statusText + ')')
+            sending = false;
+            switch (xhttp.status) {
+              case 200:   // success
+                break;
+              case 0:     // error (status to be checked in chrome network tab). Usually happens when reloading in dev mode
+              case 401:   // Unauthorized
+              case 500:   // Internal Server Error
+                unsentMsgs = sendingMsgs + unsentMsgs;
+                break;
+              default:
+                alert('readystate=4, status=' + xhttp.status + '(' + xhttp.statusText + ')')
             }
           }
         };
 
-        xhttp.send();
+        xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhttp.send('msg=' + sendingMsgs);
+
+        if (unsentMsgs.length > 0)
+          setTimeout(send);
       }
     }
   };
@@ -242,10 +257,19 @@ if (/iPhone/.test(navigator.userAgent)) {
         msg += inspect(arguments[i]);
       }
     }
-    msg += '%0A';
+
+    const LMAX = 1024;
+
+    if (msg.length > 1024) {
+      msg = msg.substring(0, LMAX / 2) + '\n...\n' + msg.substring(msg.length - LMAX / 2);
+    }
+
+    msg += '\n';
 
     unsentMsgs += msg;
 
     send();
   };
+
+  console.error = console.log;
 }
