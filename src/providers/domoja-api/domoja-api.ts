@@ -101,7 +101,7 @@ export class DomojaApiService {
     startTime: new Date
   };
   private events: Subject<message>;
-  private authentified = undefined;
+  private authentified: boolean = undefined;
   private devicesObservable: BehaviorSubject<Array<Device>> = new BehaviorSubject(this.devices);
   private pagesObservable: BehaviorSubject<Array<Page>> = new BehaviorSubject(this.pages);
   private appObservable: BehaviorSubject<App> = new BehaviorSubject(this.app);
@@ -137,6 +137,7 @@ export class DomojaApiService {
       }
       const notify = this.notifyConnectionStarted();
       this.applyEvent(event);
+      //this.events.isEmpty().subscribe((empty) => { console.log('in domoja-api, isempty?', empty) });
       this.devicesObservable.next(this.devices);
       this.notifyConnectionClosed(notify, true);
     });
@@ -300,6 +301,9 @@ export class DomojaApiService {
       this.keptEvents.forEach(ev => this.applyEvent(ev));
       this.keptEvents = [];
       observer.next(this.devices);
+      this.devices.forEach(d => {
+        this.deviceObservables[d.path].next(d);
+      })
     });
   }
 
