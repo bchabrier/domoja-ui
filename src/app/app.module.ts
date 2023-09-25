@@ -18,6 +18,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PageComponentsProvider } from '../providers/page-components/page-components';
 import { PageListProvider } from '../providers/page-list/page-list';
 import { CameraUrlProvider } from '../providers/camera-url/camera-url';
+import { DmjWidgetComponent } from '../components/dmj-widget';
 //: # (ImportPageComponents START)    
 import { AboutPage } from '../pages/about/about';
 import { HomePage } from '../pages/home/home';
@@ -38,6 +39,7 @@ import { DmjLinkComponent } from '../components/dmj-link/dmj-link';
 import { DmjMultistateComponent } from '../components/dmj-multistate/dmj-multistate';
 import { DmjProgressBarComponent } from '../components/dmj-progress-bar/dmj-progress-bar';
 import { DmjTempGraph } from '../components/dmj-temp-graph/dmj-temp-graph';
+import { DmjTemplateComponent } from '../components/dmj-template/dmj-template';
 import { DmjTempoColorComponent } from '../components/dmj-tempo-color/dmj-tempo-color';
 import { DmjTextComponent } from '../components/dmj-text/dmj-text';
 import { DmjToggleComponent } from '../components/dmj-toggle/dmj-toggle';
@@ -72,6 +74,7 @@ LoginPage,
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
+    DmjWidgetComponent,
     //: # (PageComponents START)    
 AboutPage,
 HomePage,
@@ -92,6 +95,7 @@ DmjLinkComponent,
 DmjMultistateComponent,
 DmjProgressBarComponent,
 DmjTempGraph,
+DmjTemplateComponent,
 DmjTempoColorComponent,
 DmjTextComponent,
 DmjToggleComponent,

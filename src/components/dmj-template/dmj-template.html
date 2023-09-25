@@ -1,0 +1,4 @@
+<ng-container *ngFor="let element of templateElements" ngSwitch="{{element.type}}">
+    <ng-container [innerHTML]="element.string" *ngSwitchCase="'string'"></ng-container>
+    <dmj-widget [device]="element.device" [imageSize]="" *ngSwitchDefault></dmj-widget>
+</ng-container><span *ngIf="string!=null" [innerHTML]="string | friendlyDate"></span><span *ngIf="string==null">{{device.state | friendlyDate}}</span><span class=error *ngIf="error!=''" [innerHTML]=error></span>
