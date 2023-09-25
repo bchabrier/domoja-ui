@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Device } from '../../providers/domoja-api/domoja-api';
+import { Device, DomojaApiService } from '../../providers/domoja-api/domoja-api';
 import { DmjWidgetComponent } from '../dmj-widget';
 import { PageListProvider, componentPage } from '../../providers/page-list/page-list';
 import { Subscription } from 'rxjs';
@@ -34,8 +34,8 @@ export class DmjLinkComponent extends DmjWidgetComponent implements OnInit, OnDe
   pages: Array<componentPage> = [];
   pagelist_subscription: Subscription;
 
-  constructor(private sanitizer: DomSanitizer, public pageList: PageListProvider, public navCtrl: NavController) {
-    super(null);
+  constructor(private sanitizer: DomSanitizer, public pageList: PageListProvider, public navCtrl: NavController, public api: DomojaApiService) {
+    super(null, api);
   }
 
   ngOnInit() {

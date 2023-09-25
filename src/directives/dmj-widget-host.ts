@@ -35,7 +35,7 @@ function applyFormat(format: string, value: string | Date) {
 
     let formatArgs = [];
     while (index >= 0) {
-      switch (format.substring(index, 2)) {
+      switch (format.substring(index, index + 2)) {
         case '%s':
         case '%d':
           formatArgs.push(value);
@@ -46,7 +46,7 @@ function applyFormat(format: string, value: string | Date) {
           try {
             valueAsJSON = JSON.parse(value as string);
           } catch (e) { }
-          format = format.substr(0, index) + '%s' + format.substr(index + 2); // otherwise will display "<json_string>" with ""
+          format = format.substring(0, index) + '%s' + format.substring(index + 2); // otherwise will display "<json_string>" with ""
           formatArgs.push(valueAsJSON ? util.inspect(valueAsJSON).replaceAll('\n', '<br/>').replaceAll(/ /g, '&nbsp;') : value);
           break;
       }
@@ -81,7 +81,18 @@ function applyFormat(format: string, value: string | Date) {
   return { string, error }
 }
 
-export function interpretLabel(sanitizer: DomSanitizer, label: string, devices: Map<string, Device>): string {
+/**
+ * This function interpret the device values in a label
+ * Device values are denoted by ${<device-path>}.
+ * It can be completed by a format as in
+ * ${piscine.temperature, number, ::.#}
+ * 
+ * @param sanitizer 
+ * @param label 
+ * @param devices 
+ * @returns the new label and the devices that were mentionned
+ */
+export function interpretLabel(sanitizer: DomSanitizer, label: string, devices: Map<string, Device>): { newlabel: string, devices: string[] } {
   let re = /\$(\{([^{},]+)(,([^{}]*(\{[^}]*\})*)+)?\})/;
   // path potentially followed by , and chars and possible { } groups
 
@@ -89,8 +100,11 @@ export function interpretLabel(sanitizer: DomSanitizer, label: string, devices: 
 
   let m: RegExpMatchArray;
 
+  const devicePaths: string[] = [];
+
   while (m = result.match(re)) {
     let devicePath = m[2];
+    devicePaths.push(devicePath);
     let wholeExpr = m[1].replace(devicePath, "value");
     let value = devices.get(devicePath) ? devices.get(devicePath).state : "'unknown device'";
     if (value === undefined || value === null) value = '??';
@@ -105,7 +119,7 @@ export function interpretLabel(sanitizer: DomSanitizer, label: string, devices: 
     }
   }
 
-  return result;
+  return { newlabel: result, devices: devicePaths };
 }
 
 export function formatString(sanitizer: DomSanitizer, format: string, value: string | Date) {

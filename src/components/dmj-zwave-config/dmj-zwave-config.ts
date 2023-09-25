@@ -72,7 +72,7 @@ export class DmjZwaveConfigComponent extends DmjWidgetComponent implements OnIni
   devices: Device[];
 
   constructor(public api: DomojaApiService, private sanitizer: DomSanitizer) {
-    super(null);
+    super(null, api);
     this.devices_subscription = this.api.getDevices().subscribe(devices => {
       this.devices = devices;
       this.updateWidget(devices);

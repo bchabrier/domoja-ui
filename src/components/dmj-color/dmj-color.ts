@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DmjWidgetComponent } from '../dmj-widget';
+import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
 
 /**
  * Displays the device state with its color.
@@ -15,8 +16,8 @@ import { DmjWidgetComponent } from '../dmj-widget';
 })
 export class DmjColorComponent extends DmjWidgetComponent {
 
-  constructor(private sanitizer: DomSanitizer) {
-    super(null);
+  constructor(private sanitizer: DomSanitizer, public api: DomojaApiService) {
+    super(null, api);
   }
 
   color(rgb: string) {

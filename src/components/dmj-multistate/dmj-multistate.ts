@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DmjWidgetComponent } from '../dmj-widget';
-import { Device } from '../../providers/domoja-api/domoja-api';
+import { Device, DomojaApiService } from '../../providers/domoja-api/domoja-api';
 
 /**
  * This widget is used to display a state with multiple values. Each state value is represented with a button. 
@@ -26,8 +26,8 @@ export class DmjMultistateComponent extends DmjWidgetComponent implements OnInit
   @Input() colors: string[];
   @Input() labels: string[];
 
-  constructor() {
-    super(null);
+  constructor(api: DomojaApiService) {
+    super(null, api);
   }
 
   ngOnInit() {

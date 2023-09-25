@@ -32,7 +32,7 @@ export class DmjGraph extends DmjWidgetComponent implements OnInit, OnDestroy {
   device_subscription: Subscription;
 
   constructor(public api: DomojaApiService, private sanitizer: DomSanitizer) {
-    super(null);
+    super(null, api);
   }
 
   ngOnInit() {

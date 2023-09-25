@@ -76,8 +76,8 @@ export class DmjDashboardComponent implements OnInit, OnDestroy {
   }
 
 
-  interpretLabel(label: string, devices: Map<string, Device>) {
-    return interpretLabel(this.sanitizer, label, devices);
+  interpretLabel(label: string, devices: Map<string, Device>): string {
+    return interpretLabel(this.sanitizer, label, devices).newlabel;
   }
 
   getDeviceState(path: string) {

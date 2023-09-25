@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DmjTextComponent } from '../dmj-text/dmj-text'
+import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
 
 /**
  * Displays a text area with a button
@@ -18,8 +19,8 @@ export class DmjInputComponent extends DmjTextComponent {
 
   value: string = '';
 
-  constructor(sanitizer: DomSanitizer) {
-    super(sanitizer)
+  constructor(sanitizer: DomSanitizer, public api: DomojaApiService) {
+    super(sanitizer, api)
   }
 
   done() {

@@ -77,8 +77,8 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
   changeQueue: ItemData[][] = [];
   viewChecked: boolean = false;
 
-  constructor(public api: DomojaApiService, private sanitizer: DomSanitizer) {
-    super(null);
+  constructor(api: DomojaApiService, private sanitizer: DomSanitizer) {
+    super(null, api);
   }
 
   ngOnInit() {

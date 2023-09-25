@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DmjWidgetComponent } from '../dmj-widget';
 import { AlertController } from 'ionic-angular';
+import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
 
 /**
  * Displays a button that, when clicked, will open a confirmation dialog box.
@@ -29,8 +30,8 @@ export class DmjConfirmComponent extends DmjWidgetComponent implements OnInit {
   @Input() message: string;
   @Input() buttons: Array<string>;
 
-  constructor(private alertCtrl: AlertController) {
-    super(null);
+  constructor(private alertCtrl: AlertController, public api: DomojaApiService) {
+    super(null, api);
   }
 
   ngOnInit() {

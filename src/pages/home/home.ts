@@ -60,8 +60,8 @@ export class HomePage extends DmjPage implements OnInit, OnDestroy {
     });
   }
 
-  interpretLabel(label: string) {
-    return interpretLabel(this.sanitizer, label, this.devices);
+  interpretLabel(label: string): string {
+    return interpretLabel(this.sanitizer, label, this.devices).newlabel;
   }
 
 }

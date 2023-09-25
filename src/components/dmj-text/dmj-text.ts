@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Device } from '../../providers/domoja-api/domoja-api';
+import { Device, DomojaApiService } from '../../providers/domoja-api/domoja-api';
 import { DmjWidgetComponent } from '../dmj-widget';
 import { formatString } from '../../directives/dmj-widget-host';
 
@@ -40,8 +40,8 @@ export class DmjTextComponent extends DmjWidgetComponent implements OnInit {
   format: string;
   @Input() string: string | Date | SafeHtml;
 
-  constructor(private sanitizer: DomSanitizer) {
-    super(null);
+  constructor(private sanitizer: DomSanitizer, api: DomojaApiService) {
+    super(null, api);
   }
 
   ngOnInit() {

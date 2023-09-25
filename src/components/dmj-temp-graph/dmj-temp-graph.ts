@@ -61,7 +61,7 @@ export class DmjTempGraph extends DmjWidgetComponent implements OnInit, OnDestro
 
 
   constructor(public api: DomojaApiService, private http: HttpClient) {
-    super(null);
+    super(null, api);
   }
 
   ngOnInit() {

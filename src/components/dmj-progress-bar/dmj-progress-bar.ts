@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { DmjTextComponent } from '../dmj-text/dmj-text';
+import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
 
 /**
  * Displays a progress or meter HTML5 element, based on the state of the device.
@@ -26,8 +27,8 @@ import { DmjTextComponent } from '../dmj-text/dmj-text';
 })
 export class DmjProgressBarComponent extends DmjTextComponent {
 
-  constructor(sanitizer: DomSanitizer) {
-    super(sanitizer)
+  constructor(sanitizer: DomSanitizer, public api: DomojaApiService) {
+    super(sanitizer, api)
   }
 
   value(state: string) {
