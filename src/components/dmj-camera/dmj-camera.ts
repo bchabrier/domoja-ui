@@ -38,6 +38,7 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
 
     const aspectRatio = this.args[2] || '';
     this.style = this.sanitizer.bypassSecurityTrustStyle(aspectRatio !== '' ? `width:100%;aspect-ratio:${aspectRatio};` : '');
+    this.opacity = 1;
 
     this.minRefreshInterval = this.args && Number(this.args[1]);
     if (!isNaN(this.minRefreshInterval)) this.minRefreshInterval = 0;
@@ -58,7 +59,10 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
 
     this.cameraUrl = `${DomojaApiService.DomojaURL}/devices/${this.device.path}/${this.mode}`;
     if (this.mode == 'snapshot') {
-      this.cameraUrlProvider.getLastFreshUrl(this.cameraUrl, (url) => { this.url = url });
+      this.cameraUrlProvider.getLastFreshUrl(this.cameraUrl, (url, errCount) => {
+        this.url = url;
+        this.opacity = this.computeOpacity(errCount);
+      });
       // Safari, probably for optimization, does not trigger onload when the URL is static / cached.
       // Hence, we trigger it "manually"
       setTimeout(() => {
@@ -81,7 +85,7 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
         //this.updateUrl();
         this.cameraUrlProvider.getNewFreshUrl(this.cameraUrl,
           newUrl => { this.opacity = 1; this.url = newUrl },
-          errCount => { this.opacity = Math.max(this.opacity * .9, 0.3); }
+          errCount => { this.opacity = this.computeOpacity(errCount) }
         );
       }, refreshInterval);
     }
@@ -103,6 +107,10 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
     ;
     this.fullscreenRequested = true;
     this.onload();
+  }
+
+  computeOpacity(errCount: number) {
+    return Math.max(this.opacity * .95 ** errCount, 0.4);
   }
 
   isInFullScreenMode(): boolean {

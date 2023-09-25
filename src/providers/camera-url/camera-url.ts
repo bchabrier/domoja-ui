@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/Rx';
 import { SafeStyle } from '@angular/platform-browser';
 
-type callback = (newUrl: string) => void;
+type callback = (newUrl: string, errorCount: number) => void;
 
 /*
   Generated class for the CameraUrlProvider provider.
@@ -75,9 +75,9 @@ export class CameraUrlProvider {
    */
   getLastFreshUrl(url: string, callback: callback) {
     if (!this.timedUrls[url] || !this.timedUrls[url].url) {
-      return this.getNewFreshUrl(url, callback);
+      return this.getNewFreshUrl(url, callback, null);
     } else {
-      callback(this.timedUrls[url].url);
+      callback(this.timedUrls[url].url, this.timedUrls[url].errorCount);
     }
   }
 
@@ -86,7 +86,7 @@ export class CameraUrlProvider {
    * @param url 
    * @returns 
    */
-  getNewFreshUrl(url: string, callback: callback, onerror: (errCount: number) => void = null) {
+  getNewFreshUrl(url: string, callback: callback, onerror: (errCount: number) => void) {
     if (!this.timedUrls[url])
       this.timedUrls[url] = {
         url: undefined,
@@ -106,13 +106,13 @@ export class CameraUrlProvider {
       // else wait for the url to be loaded before calling the callbacks
       if (!this.timedUrls[url].url) {
         this.timedUrls[url].url = newUrl;
-        this.timedUrls[url].callbacks.forEach(c => c(newUrl));
+        this.timedUrls[url].callbacks.forEach(c => c(newUrl, this.timedUrls[url].errorCount));
         this.timedUrls[url].callbacks = [];
       }
 
       this.timedUrls[url].img.onload = () => {
         this.timedUrls[url].url = newUrl;
-        this.timedUrls[url].callbacks.forEach(c => c(newUrl));
+        this.timedUrls[url].callbacks.forEach(c => c(newUrl, 0));
         this.timedUrls[url].callbacks = [];
         this.timedUrls[url].reloading = false;
         this.timedUrls[url].errorCount = 0;
@@ -122,9 +122,9 @@ export class CameraUrlProvider {
         this.timedUrls[url].reloading = false;
         this.timedUrls[url].errorCount++;
         if (onerror) onerror(this.timedUrls[url].errorCount);
-        setTimeout(() => this.getNewFreshUrl(url, callback), this.timedUrls[url].errorCount < 5 ? 0 : 5000);
+        setTimeout(() => this.getNewFreshUrl(url, callback, onerror), this.timedUrls[url].errorCount < 5 ? 0 : 5000);
       };
-      
+
       this.timedUrls[url].img.onerror = errorHandler;
       this.timedUrls[url].img.onabort = errorHandler;
       this.timedUrls[url].img.onemptied = errorHandler;

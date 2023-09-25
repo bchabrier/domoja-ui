@@ -59,7 +59,7 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
 
   onload() {
     setTimeout(() => {
-      this.cameraUrlProvider.getNewFreshUrl(this.cameraUrl, (newUrl) => { this.url = newUrl });
+      this.cameraUrlProvider.getNewFreshUrl(this.cameraUrl, (newUrl) => { this.url = newUrl }, null);
     }, this.refreshInterval);
   }
 
