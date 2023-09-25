@@ -31,14 +31,18 @@ export class DmjMultistateComponent extends DmjWidgetComponent implements OnInit
   }
 
   ngOnInit() {
-    this.states = this.args[0] ? this.args[0].split(',') : []
-    this.colors = this.args[1] ? this.args[1].split(',') : []
-    this.labels = this.args[2] ? this.args[2].split(',') : this.states
+    this.onArgsChange();
   }
 
   changeState(device: Device, state: string) {
     const prevState = this.device.state;
-    device.stateChange(device, state, err => {if (err) this.device.state = prevState});
+    device.stateChange(device, state, err => { if (err) this.device.state = prevState });
+  }
+
+  onArgsChange() {
+    this.states = this.args[0] ? this.args[0].split(',') : [];
+    this.colors = this.args[1] ? this.args[1].split(',') : [];
+    this.labels = this.args[2] ? this.args[2].split(',') : this.states;
   }
 
 }
