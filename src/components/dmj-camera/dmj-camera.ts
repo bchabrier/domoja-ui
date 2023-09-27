@@ -1,8 +1,47 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { DmjWidgetComponent } from '../dmj-widget';
 import { CameraUrlProvider } from '../../providers/camera-url/camera-url'
 import { DomojaApiService } from '../../providers/domoja-api/domoja-api';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+
+
+const debugAspectRatio = false;
+
+/**
+ ** translates an aspect ratio from a string to a number
+ ** @param aspectRatio 
+ ** @returns 
+ */
+export function computeAspectRatio(aspectRatio: string): number {
+  let match: RegExpMatchArray;
+  match = aspectRatio.match(/^ *(\d+) *\/ *(\d+) *$/);
+  if (match) {
+    return parseInt(match[1]) / parseInt(match[2]);
+  }
+  match = aspectRatio.match(/^ *(\d+) *$/);
+  if (match) {
+    return parseInt(match[1]);
+  }
+  if (aspectRatio === "") {
+    return undefined;
+  }
+  debugAspectRatio && console.error(`computeAspectRatio: aspect ratio "${aspectRatio}" not supported!`);
+  return undefined;
+}
+
+/**
+ ** patch the img DOM element to fit the aspect ratio
+ ** @param img 
+ ** @param aspectRatio 
+ */
+export function patchAspectRatio(img: HTMLImageElement, aspectRatio: number) {
+  if (aspectRatio && img && (img.style['aspectRatio'] === undefined || debugAspectRatio)) {
+    // aspect-ratio is not supported on Safari old version
+
+    debugAspectRatio && console.log(`Patching aspect ratio ${aspectRatio} for ${img.src}: width: ${img.width} height: ${img.height} => ${img.width / aspectRatio}`);
+    img.style.height = img.width / aspectRatio + "px";
+  }
+}
 
 /**
  * Displays a camera.
@@ -28,8 +67,9 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
   style: SafeStyle;
   opacity: number;
   fullscreenRequested: boolean = false;
+  aspectRatio: number;
 
-  constructor(private cameraUrlProvider: CameraUrlProvider, private sanitizer: DomSanitizer, public api: DomojaApiService) {
+  constructor(private element: ElementRef, private cameraUrlProvider: CameraUrlProvider, private sanitizer: DomSanitizer, public api: DomojaApiService) {
     super(null, api);
   }
 
@@ -37,6 +77,8 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
     // args: [type:'snapshot' | 'stream', refreshInterval:number, aspectRatio: string (e.g.: 16/9)]
 
     const aspectRatio = this.args[2] || '';
+    this.aspectRatio = computeAspectRatio(aspectRatio);
+
     this.style = this.sanitizer.bypassSecurityTrustStyle(aspectRatio !== '' ? `width:100%;aspect-ratio:${aspectRatio};` : '');
     this.opacity = 1;
 
@@ -77,6 +119,9 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
   onload() {
     if (this.mode == 'snapshot' && this.refreshInterval !== '' && this.refreshInterval !== undefined) {
 
+      const img = this.element.nativeElement.getElementsByTagName('img')[0] as HTMLImageElement;
+      patchAspectRatio(img, this.aspectRatio);
+
       const refreshInterval = this.isInFullScreenMode() ? this.minRefreshInterval : this.refreshInterval;
 
       this.cameraUrlProvider.updateFullscreenImage(this, this.url, this.style);
@@ -100,6 +145,9 @@ export class DmjCameraComponent extends DmjWidgetComponent implements OnInit {
     const divElement = document.getElementById('fullscreen-div');
     const imgElement = divElement.querySelector('img');
     imgElement.src = this.url; // change url immediately
+    imgElement.onload = () => {
+      patchAspectRatio(imgElement, this.aspectRatio);
+    }
 
     this.cameraUrlProvider.getLastFreshUrl(this.cameraUrl, (url) => {
       this.cameraUrlProvider.setFullscreenImage(this, url, this.style);

@@ -1,9 +1,10 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { DmjDashboardComponent } from '../dmj-dashboard-component';
 import { DomojaApiService, Device } from '../../providers/domoja-api/domoja-api'
 import { CameraUrlProvider } from '../../providers/camera-url/camera-url'
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
+import { computeAspectRatio, patchAspectRatio } from '../dmj-camera/dmj-camera';
 
 @Component({
   selector: 'dmj-dashboard-camera',
@@ -16,8 +17,9 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
   @Input() url: string;
   style: SafeStyle = undefined;
   devices_subscription: Subscription;
+  aspectRatio: number;
 
-  constructor(private cameraUrlProvider: CameraUrlProvider, sanitizer: DomSanitizer, private apiService: DomojaApiService) {
+  constructor(private element: ElementRef, private cameraUrlProvider: CameraUrlProvider, sanitizer: DomSanitizer, private apiService: DomojaApiService) {
     super(sanitizer);
   }
 
@@ -37,6 +39,7 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
             const cameraWidget = cameraDevice.widget;
             const aspectRatio = cameraWidget && cameraWidget.split(':')[3] || '';
             this.style = this.sanitizer.bypassSecurityTrustStyle(aspectRatio !== '' ? `width:100%;aspect-ratio:${aspectRatio};` : '');
+            this.aspectRatio = computeAspectRatio(aspectRatio);
 
             // suppress subscription which is now of no use
             this.devices_subscription.unsubscribe();
@@ -58,6 +61,9 @@ export class DmjDashboardCameraComponent extends DmjDashboardComponent implement
   }
 
   onload() {
+    const img = this.element.nativeElement.getElementsByTagName('img')[0] as HTMLImageElement;
+    patchAspectRatio(img, this.aspectRatio);
+
     setTimeout(() => {
       this.cameraUrlProvider.getNewFreshUrl(this.cameraUrl, (newUrl) => { this.url = newUrl }, null);
     }, this.refreshInterval);
