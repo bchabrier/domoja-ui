@@ -6,6 +6,13 @@ dmj-dashboard-icon {
     ion-icon.largeIcon {
         font-size: 100px;
         text-align: center;
+        max-height: 90px;
+    }
+    img.largeIcon {
+        width: auto;
+        height: auto;
+        color: lightgrey;
+        max-height: 90px;
     }
     div.verticallyCenteredOverlay {
         position: absolute;

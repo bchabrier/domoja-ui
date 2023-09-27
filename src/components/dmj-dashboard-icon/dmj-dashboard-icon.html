@@ -1,5 +1,5 @@
 <div class="frame">
-  <ion-icon *ngIf="isIcon" [style.opacity]="args.active=='OFF'?0.3:args.active=='ON'?1:args.opacity" class="largeIcon" name="{{icon}}" [style.color]="!color||color=='??'?'lightgrey':color"></ion-icon>
-  <img *ngIf="!isIcon" [style.opacity]="args.active=='OFF'?0.3:args.active=='ON'?1:args.opacity" class="largeIcon" src="{{icon}}"/>
+  <ion-icon class="largeIcon" *ngIf="isIcon" [style.opacity]="args.active=='OFF'?0.3:args.active=='ON'?1:args.opacity" class="largeIcon" name="{{icon}}" [style.color]="!color||color=='??'?'lightgrey':color"></ion-icon>
+  <img class="largeIcon" *ngIf="!isIcon" [style.opacity]="args.active=='OFF'?0.3:args.active=='ON'?1:args.opacity" class="largeIcon" src="{{icon}}"/>
   <div class="verticallyCenteredOverlay" [innerHTML]=sanitizedText></div>
 </div>
