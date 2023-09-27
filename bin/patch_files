@@ -56,10 +56,14 @@ if [ "$1" = set ]; then
     target="$projdir/src/recompiled/intl-messageformat.esm.js"
     [  "$target" -nt "$source" ] || (
         cd / # to have no tconfig.json
-        # use /usr/bin/tsc (not node_modules/typescript/bin/tsc) because too old to compile this file
+        # use /usr/bin/tsc (not node_modules/typescript/bin/tsc) because too old to compile this file (typescript version limited to 2.6.2 for ionic/angular)
         /usr/bin/tsc --allowJS -outDir $(dirname "$target") $projdir/node_modules/intl-messageformat/intl-messageformat.esm.js
     )
     echo
+fi
+
+if [ "$1" != set -a "$1" != unset ]; then
+    usage
 fi
 
 patch $1 \
