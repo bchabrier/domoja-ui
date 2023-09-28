@@ -20,6 +20,7 @@ export class CameraUrlProvider {
       callbacks: callback[], // callbacks to call when reloading is completed
       img: HTMLImageElement, // img used to reload urls
       errorCount: number, // number of consecutive load errors
+      dateReloading: Date, // the date when a reload was requested
     }
   } = {};
 
@@ -94,13 +95,21 @@ export class CameraUrlProvider {
         callbacks: [],
         img: document.createElement('img'),
         errorCount: 0,
+        dateReloading: new Date(),
       };
     if (this.timedUrls[url].callbacks.indexOf(callback) === -1)
       this.timedUrls[url].callbacks.push(callback);
 
+    if (this.timedUrls[url].reloading && this.timedUrls[url].dateReloading.getTime() + 30000 <= Date.now()) {
+      // timeout of 10s (can happen when reactivating the iPhone or browser: reloading was set to true, and is not set to false)
+      console.log('camera reloading timeout for url=', url);
+      this.timedUrls[url].reloading = false;
+    }
+
     if (!this.timedUrls[url].reloading) {
       const newUrl = this.getNewTimedUrl(url);
       this.timedUrls[url].reloading = true;
+      this.timedUrls[url].dateReloading = new Date();
 
       // if first time we get a new url, call the callbacks immediately,
       // else wait for the url to be loaded before calling the callbacks
