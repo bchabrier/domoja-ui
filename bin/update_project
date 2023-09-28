@@ -4,6 +4,8 @@ cd `dirname $0`/..
 
 tmpfile=/tmp/update_project_file.$$
 
+tab=""
+
 START ()
 {
     _balise=$1
@@ -12,13 +14,22 @@ START ()
     cp $_file $tmpfile.FULL
     >$tmpfile
     awk '{ print } /\/\/: # \('$_balise' START\)/ { exit }' $tmpfile.FULL > $tmpfile.$_balise.START
+
+    # find the leading tab if any (tab of the first line following the START balise)
+    tab=$(awk '
+        /\/\/: # \('$_balise' START\)/ { found = 1 } 
+        /\/\/: # \('$_balise' END\)/ {exit}    
+        found == 1 { gsub(/[^ \t].*$/, "", $0); print; exit}
+    ' $tmpfile.FULL)
 }
 
 END ()
 {
     grep -q "//: # ($_balise END)" $_file || echo "Warning: Balise '$_balise' not found in" $_file
     awk '/\/\/: # \('$_balise' END\)/ { p = 1 } p == 1 { print } ' $tmpfile.FULL > $tmpfile.$_balise.END
-    cat $tmpfile.$_balise.START $tmpfile $tmpfile.$_balise.END > $tmpfile.FULL
+    cat $tmpfile.$_balise.START > $tmpfile.FULL
+    awk '{printf "'"$tab"'"; print}' $tmpfile >> $tmpfile.FULL
+    cat $tmpfile.$_balise.END >> $tmpfile.FULL
 
     if cmp -s $tmpfile.FULL $_file
     then
