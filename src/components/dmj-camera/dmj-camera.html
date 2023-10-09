@@ -1,3 +1,7 @@
 <!-- width must be absolute or image shifts to the left -->
-<img *ngIf="imageSize=='tiny'" (load)="onload()" (error)="onerror()" (click)="onclick()" height=45px [style]="style" src={{url}} />
-<img *ngIf="imageSize!='tiny'" (load)="onload()" (error)="onerror()" (click)="onclick()" [style]="style" [style.opacity]="opacity" [style.transition]="opacity===1?'':'opacity 1s'" src={{url}} />
+<div class="imgFrame2">
+    <img *ngIf="imageSize=='tiny'" (load)="onload()" (error)="onerror()" (click)="onclick()" height=45px [style]="style" src={{url}} />
+    <img *ngIf="imageSize!='tiny'" (load)="onload()" (error)="onerror()" (click)="onclick()" [style]="style" [style.opacity]="opacity" [style.transition]="opacity===1?'':'opacity 1s'" src={{url}} />
+    <ion-icon *ngIf="imageSize!='tiny'" class="largeIcon2" name="videocam"></ion-icon>
+    <ion-icon *ngIf="imageSize=='tiny'" class="largeIcon2" name="videocam" [style.fontSize]="'45px'" [style.textAlign]="'end'"></ion-icon>
+</div>

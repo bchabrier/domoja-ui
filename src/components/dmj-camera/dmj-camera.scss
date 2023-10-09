@@ -1,5 +1,23 @@
 dmj-camera {
+    div.imgFrame2 {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        position: relative;
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
     img {
         display: block;
+        min-width: 40px;
+        z-index: 1;
+    }
+    ion-icon.largeIcon2 {
+        font-size: 100px;
+        color: lightgrey;
+        text-align: center;
+        min-width: 100%;
+        position: absolute;
+        z-index: 0;
     }
 }
