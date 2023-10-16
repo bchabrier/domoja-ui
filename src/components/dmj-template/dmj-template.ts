@@ -9,7 +9,10 @@ import { DynamicComponentFactory, DynamicComponentFactoryFactory } from '../../p
 
 // strongly inspired from https://www.talentica.com/blogs/angular-how-to-render-html-containing-angular-components-dynamically-at-run-time/
 
-
+type Domoja = {
+  getDeviceState: (device: string) => string,
+  setDeviceState: (device: string, state: string, callback: (err: Error) => void) => void,
+}
 
 
 /*
@@ -65,6 +68,20 @@ export class DmjTemplateComponent extends DmjWidgetComponent implements OnDestro
   ) {
     super(null, api);
     this.hostElement = elementRef.nativeElement;
+
+    window['Domoja'] = (script: HTMLScriptElement) => {
+      if (!script) {
+        throw new Error(`Domoja: null script element. Must be created at top level in the script (not inside a function)!`);
+      }
+
+      const template: DmjTemplateComponent = script['dmjTemplate'];
+
+      return {
+        getDeviceState: (device: string) => template.api.getCurrentDevice(device).state,
+        setDeviceState: (device: string, state: string, callback: (err: Error) => void) => template.api.setDeviceState(template.api.getCurrentDevice(device), state, callback),
+      } as Domoja;
+    }
+
   }
 
   ngOnInit() {
@@ -90,6 +107,8 @@ export class DmjTemplateComponent extends DmjWidgetComponent implements OnDestro
           s.setAttribute(attr, script.getAttribute(attr));
         });
         s.text = text;
+        // link the script to this template
+        s['dmjTemplate'] = this;
         script['replaceWith' /* typescript limited to 2.6.2 */](s);
       });
 
@@ -131,6 +150,13 @@ export class DmjTemplateComponent extends DmjWidgetComponent implements OnDestro
   ngOnDestroy(): void {
     this.subscription && this.subscription.unsubscribe();
     this.subscription = null;
+
+    // remove the templates stored in the scripts
+    const scriptEls = Array.prototype.slice.call(this.hostElement.querySelectorAll('script')) as HTMLScriptElement[];
+    scriptEls.forEach(script => {
+      delete script['dmjTemplate'];
+    });
+
     this.removeAllComponents();
   }
 
