@@ -124,6 +124,10 @@ export class DomojaApiService {
       if (event.type == 'error') {
         const notify = this.notifyConnectionStarted();
         this.notifyConnectionClosed(notify, false);
+        // check if connection is still authorized
+        // it's a hack as we cannot detect that the websocket connection received 401 status
+        // this will have the side effect to redirect to the login page
+        this.loadFromAPI("/app", { next: () => { } } as any as Subject<any>);
         return;
       }
       if (event.type == 'reload') {
