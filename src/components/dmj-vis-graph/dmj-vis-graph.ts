@@ -291,10 +291,8 @@ export class DmjVisGraph extends DmjWidgetComponent implements OnInit, OnDestroy
 
       // check if visible
       const nbItems = groupItemsKeys.length;
-      if (nbItems > 0) {
-        const visible = groupItems[groupItemsKeys[0]].data.start <= end && groupItems[groupItemsKeys[nbItems - 1]].data.end >= start;
-        group.setData({ className: visible || this.displayOnlyInRangeExcept === null || this.displayOnlyInRangeExcept.indexOf(groupId) != -1 ? "in-range" : "out-range" });
-      }
+      const visible = nbItems > 0 && groupItems[groupItemsKeys[0]].data.start <= end && groupItems[groupItemsKeys[nbItems - 1]].data.end >= start;
+      group.setData({ className: visible || this.displayOnlyInRangeExcept === null || this.displayOnlyInRangeExcept.indexOf(groupId) != -1 ? "in-range" : "out-range" });
     }
   }
 
