@@ -362,3 +362,22 @@ When running domoja-ui separately (in development mode), calls to the domoja API
 ```
 $ ionic generate provider
 ```
+
+# Needed to build and deploy
+
+Node version 20 doesn't work (corrupted file `~/.node-gyp/20.9.0/include/node/common.gypi` in node-gyp starting with "nerate '"). And compilation requires c++>14.
+```
+$ nvm use 18
+$ env CXXFLAGS="-std=c++17" yarn
+```
+
+Use classic version of yarn (1.22). Warning: it could be set by mistake at home level, in which case you must remove ~/package.json
+```
+$ yarn set version classic
+```
+
+Reduce memory usage
+```
+$ pm2 kill
+$ sudo systemctl stop mongodb
+```
