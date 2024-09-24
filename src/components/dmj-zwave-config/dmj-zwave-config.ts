@@ -6,13 +6,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { isArray } from 'ionic-angular/util/util';
 
 
-// vis package is using a too newer version of typescript, no compatible with angular 5
+// vis package is using a too newer version of typescript, not compatible with angular 5
 // hence, to compile we use the js imports, and to check at edit time, we use the ts imports
 // this is done automatically by ionic:serve/build:before/after
 import { Network } from 'vis-network/peer';
-//import { Network } from 'vis-network/dist/vis-network.js';
 import { DataSet } from 'vis-data/peer';
-//import { DataSet } from 'vis-data/dist/esm.js';
 
 type ValueID = { id: string, value: any, valueMetadata: { type: string }, valueId: any };
 

@@ -10,6 +10,7 @@ usage ()
 
 projdir=$(dirname "$0")/..
 projdir=$(realpath "$projdir")
+mode="$1"
 
 patch () {
     local mode="$1"
@@ -17,25 +18,30 @@ patch () {
     sedstring="sed -i"
     while [ ! -z $1 ]
     do
-        local from
-        local to
+        local from="$1"
+        local to="$2"
+        local relative=""
+        case "$to" in 
+        recompiled/*) 
+            relative="RELATIVE"
+            ;;
+        *)
+            relative=""
+            ;;
+        esac
         case $mode in
         set) 
-            from="$1"
-            to="$2"
             echo "About to patch '$from'..."
+            sedstring="$sedstring -e 's!^\(import \(.*\) from  *[\"'\"'\"']$from[\"'\"'\"'].*\)!import \\\\2 from \"$relative$to\"; //\\\\1!'"
             ;;
         unset)
-            from="$2"
-            to="$1"
             echo "About to unpatch '$to'..."
+            sedstring="$sedstring -e 's!^\(import \(.*\) from  *[\"'\"'\"']$relative$to[\"'\"'\"']\);  *//\( *import \(.*\) from  *[\"'\"'\"']$from[\"'\"'\"']\)!\\\\3!'"
             ;;
         *)
             echo "Mode not supported: '$mode'!"
         esac
         
-        sedstring="$sedstring -e 's!^\(import \(.*\) from  *[\"'\"'\"']$from[\"'\"'\"'].*\)!//\\1!'"
-        sedstring="$sedstring -e 's!^//\(import \(.*\) from  *[\"'\"'\"']$to[\"'\"'\"'].*\)!\\1!'"
         shift
         shift
     done
@@ -44,23 +50,43 @@ patch () {
     [ "$mode" = unset ] && echo -n Unpatching...
     for file in $(find $projdir/src -type f -name '*.ts' -print)
     do
-        eval $sedstring $file
+        local relative=$(realpath -s --relative-to=$(dirname "$file") "$projdir/src")
+        local sedcmd="$(echo "$sedstring" | sed -e "s!RELATIVE!$relative/!g")"
+        eval $sedcmd $file
         echo -n '.'
     done
     echo
 }
 
-if [ "$1" = set ]; then
-    echo -n Recompiling intl-messageformat...
-    source="$projdir/node_modules/intl-messageformat/intl-messageformat.esm.js"
-    target="$projdir/src/recompiled/intl-messageformat.esm.js"
-    [  "$target" -nt "$source" ] || (
-        cd / # to have no tconfig.json
-        # use /usr/bin/tsc (not node_modules/typescript/bin/tsc) because too old to compile this file (typescript version limited to 2.6.2 for ionic/angular)
-        /usr/bin/tsc --allowJS -outDir $(dirname "$target") $projdir/node_modules/intl-messageformat/intl-messageformat.esm.js
-    )
-    echo
-fi
+exec 3>&1
+
+recompile () {
+    local file="$1"
+    local recompiledfile="recompiled/$(echo "$file" | sed -e s!/!-!g)"
+
+    if [ "$mode" = set ]; then
+        (
+            local source="$projdir/node_modules/$file"
+            local target="$projdir/src/$recompiledfile"
+            (
+                if [  "$target" -nt "$source" ] 
+                then
+                    echo No need to recompile "$file"
+                else
+                    local tmpdir=/tmp/recompile$$
+                    echo -n Recompiling "$file"...
+                    cd / # to have no tconfig.json
+                    # use /home/pi/.nvm/versions/node/v18.19.0/bin/tsc (not node_modules/typescript/bin/tsc) because too old to compile this file (typescript version limited to 2.6.2 for ionic/angular)
+                    /home/pi/.nvm/versions/node/v18.19.0/bin/tsc --allowJS -outDir "$tmpdir" "$source"
+                    mv $tmpdir/$(basename $source) $target
+                    rmdir $tmpdir
+                    echo 
+                fi
+            )
+        ) >&3
+    fi
+   echo "$recompiledfile"
+}
 
 if [ "$1" != set -a "$1" != unset ]; then
     usage
@@ -68,9 +94,9 @@ fi
 
 patch $1 \
         vis-network/peer vis-network/dist/vis-network.js \
-        vis-data/peer vis-data/dist/esm.js \
+        vis-data/peer $(recompile vis-data/dist/esm.js) \
         vis-timeline vis-timeline/dist/vis-timeline-graph2d.esm.js \
-        intl-messageformat ../recompiled/intl-messageformat.esm.js 
+        intl-messageformat $(recompile intl-messageformat/intl-messageformat.esm.js) 
         
 
 

@@ -2,11 +2,10 @@ import { Directive, ViewContainerRef } from '@angular/core';
 import { Device } from '../providers/domoja-api/domoja-api'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
-// IntlMessageFormat package is using a too newer version of typescript, no compatible with angular 5
+// IntlMessageFormat package is using a too newer version of typescript, not compatible with angular 5
 // hence, to compile we use the js imports, and to check at edit time, we use the ts imports
 // this is done automatically by ionic:serve/build:before/after
 import IntlMessageFormat from 'intl-messageformat';
-//import IntlMessageFormat from '../recompiled/intl-messageformat.esm.js';
 
 import * as util from 'util';
 

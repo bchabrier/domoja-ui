@@ -8,11 +8,9 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 // hence, to compile we use the js imports, and to check at edit time, we use the ts imports
 // this is done automatically by ionic:serve/build:before/after
 import { DataSet } from 'vis-data/peer';
-//import { DataSet } from 'vis-data/dist/esm.js';
 
 import 'hammerjs'; // need to avoid error 'Hammer.assign is not a function'. See https://github.com/almende/vis/issues/3292
 import { Timeline, TimelineOptions } from 'vis-timeline';
-//import { Timeline, TimelineOptions } from 'vis-timeline/dist/vis-timeline-graph2d.esm.js';
 
 
 const debug = false;
