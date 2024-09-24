@@ -104,8 +104,8 @@ Displays the device state as a link.
 Additional arguments can be added, separated by a character separator not used in the arguments.
 
 The supported arguments are: 
-- <page>: the page to which the link points
-- <visibility>: "hidden" or "visible" (default)
+- `<page>`: the page to which the link points
+- `<visibility>`: `"hidden"` or `"visible"` (default)
 
 Examples:
 - `"link:temperature:visible"`  
